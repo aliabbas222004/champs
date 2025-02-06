@@ -12,6 +12,8 @@ public class YModel : BaseModel
     public string Name { get; set; }
 }
 
+
+
 [Table("dept")]
 public class DeptModel : BaseModel
 {

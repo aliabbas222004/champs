@@ -129,3 +129,4 @@ C:\Users\JATIN PRAJAPATI\source\repos\trySupa\trySupa\bin\Debug\net9.0\System.Id
 C:\Users\JATIN PRAJAPATI\source\repos\trySupa\trySupa\bin\Debug\net9.0\System.Reactive.dll
 C:\Users\JATIN PRAJAPATI\source\repos\trySupa\trySupa\bin\Debug\net9.0\Websocket.Client.dll
 C:\Users\JATIN PRAJAPATI\source\repos\trySupa\trySupa\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
+C:\Users\JATIN PRAJAPATI\source\repos\trySupa\trySupa\obj\Debug\net9.0\trySupa.sourcelink.json
