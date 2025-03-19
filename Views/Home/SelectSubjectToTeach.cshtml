@@ -1,0 +1,140 @@
+﻿@{
+	ViewData["Title"] = "Teacher Dashboard";
+}
+@{
+	var timetable = ViewBag.Timetable as Dictionary<string, string>;
+	var timeSlots = ViewBag.TimeSlots as Dictionary<int, string>;
+	string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+}
+
+<div class="text-center">
+	<h1 class="display-4">Your Timetable</h1>
+	<h3 class="my-3">Select the preferred slots for teaching: @ViewBag.Subject to @ViewBag.Year students of @ViewBag.Dept department</h3>
+	<h6 class="my-2">You can select only @ViewBag.No_Of_Hours_Per_Week slots for the subject you selected</h6>
+
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+		<strong>Hey Teacher!</strong> Selecting preferred slots will not assign you that slots necessarily, you may be assigned some other slots as well.
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	<div class="container">
+		<table class="table table-striped table-responsive table-bordered">
+			<tr>
+				<td></td>
+				@foreach (var day in days)
+				{
+					<td>@day</td>
+				}
+			</tr>
+
+			@foreach (var slot in timeSlots)
+			{
+				<tr>
+					<td>@slot.Value</td>
+					@foreach (var day in days)
+					{
+						string key = $"{slot.Key}_{day}";
+						<td id="@key">
+							@if (timetable.ContainsKey(key) && !string.IsNullOrEmpty(timetable[key]))
+							{
+								@Html.Raw(timetable[key]) <!-- Already occupied slot -->
+							}
+							else
+							{
+								<!-- Empty slot - Allow selection -->
+								<button class="btn btn-primary btn-sm select-slot" data-slot="@slot.Key" data-day="@day">
+									<i class="bi bi-plus-circle"></i> Select
+								</button>
+							}
+						</td>
+					}
+				</tr>
+			}
+		</table>
+	</div>
+
+	<!-- Selected Slots Preview -->
+	<h5>Selected Slots (Max @ViewBag.No_Of_Hours_Per_Week):</h5>
+	<ul id="selectedSlotsList" class="list-group mb-3"></ul>
+
+	<!-- Confirm Selection Button -->
+	<button id="confirmSelection" class="btn btn-success mt-3">Confirm Selection</button>
+</div>
+
+<!-- JavaScript for Slot Selection Logic -->
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const selectedSlots = [];
+		const maxSlots = @ViewBag.No_Of_Hours_Per_Week;
+
+		document.querySelectorAll(".select-slot").forEach(button => {
+			button.addEventListener("click", function () {
+				let slot = this.getAttribute("data-slot");
+				let day = this.getAttribute("data-day");
+				let key = `${slot}_${day}`;
+
+				// Check if slot is already selected
+				let index = selectedSlots.findIndex(s => s.slot === slot && s.day === day);
+
+				if (index !== -1) {
+					// Slot already selected - Deselect it
+					selectedSlots.splice(index, 1);
+					this.classList.remove("btn-danger");
+					this.classList.add("btn-primary");
+					this.innerHTML = '<i class="bi bi-plus-circle"></i> Select';
+				} else {
+					// If max slots reached, remove the first slot
+					if (selectedSlots.length >= maxSlots) {
+						let removedSlot = selectedSlots.shift();
+						let removedKey = `${removedSlot.slot}_${removedSlot.day}`;
+						document.querySelector(`[data-slot='${removedSlot.slot}'][data-day='${removedSlot.day}']`).classList.remove("btn-danger");
+						document.querySelector(`[data-slot='${removedSlot.slot}'][data-day='${removedSlot.day}']`).classList.add("btn-primary");
+						document.querySelector(`[data-slot='${removedSlot.slot}'][data-day='${removedSlot.day}']`).innerHTML = '<i class="bi bi-plus-circle"></i> Select';
+					}
+
+					selectedSlots.push({ slot, day });
+					this.classList.remove("btn-primary");
+					this.classList.add("btn-danger");
+					
+					this.innerHTML = '<i class="bi bi-x-circle"></i> Deselect';
+				}
+
+				updateSelectedSlots();
+			});
+		});
+
+		function updateSelectedSlots() {
+			let list = document.getElementById("selectedSlotsList");
+			list.innerHTML = "";
+			selectedSlots.forEach(s => {
+				let li = document.createElement("li");
+				li.className = "list-group-item";
+				li.textContent = `Slot: ${s.slot}, Day: ${s.day}`;
+				list.appendChild(li);
+			});
+		}
+
+		document.getElementById("confirmSelection").addEventListener("click", function () {
+
+			let selectedData = JSON.stringify(selectedSlots);
+
+			fetch('/Home/SaveSelectedSlots', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+						teacherId: "@ViewBag.tid", 
+						selectedSlots: JSON.parse(selectedData) 
+					})
+			}).then(response => {
+				if (response.ok) return response.json();
+				throw new Error("Something went wrong!");
+			}).then(data => {
+				alert("Slots saved successfully!");
+				let tid = parseInt("@ViewBag.tid", 10);
+				window.location.href = `/Home/TeacherDashboard?tid=${tid}`;
+			}).catch(error => {
+				console.error("Error:", error);
+			});
+		});
+	});
+</script>

@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Teacher Login";
+}
+<div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <h1 style="text-align:center">@ViewData["Title"]</h1>
+        <section>
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" name="TeacherID" aria-required="true" placeholder="Teacher ID" />
+                    <label>Teacher ID</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input class="form-control" name="Password" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label class="form-label">Password</label>
+                </div>
+                <div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                </div>
+                <br />
+            </form>
+        </section>
+    </div>
+</div>
+
