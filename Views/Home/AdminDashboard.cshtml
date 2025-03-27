@@ -1,5 +1,83 @@
 ﻿<div class="row">
 	<div class="col-lg-12 col-md-6" style="text-align:center">
+		<h3>Assign subjects to teachers for generating timetable</h3>
+	</div>
+
+
+</div>
+
+
+<form asp-controller="Home" asp-action="AssignSubjects" method="post">
+
+	<div class="row my-3">
+
+		@if (ViewBag.Departments == null)
+		{
+			<div class="col-md-4"></div>
+			<div class="col-md-4" style="text-align:center">No departments to select</div>
+		}
+		else
+		{
+			<div class="col-md-6" style="text-align:center">
+				<div class="form-floating">
+					<select class="form-select" id="Dept1" name="Dept1" aria-required="true">
+						<option value="" disabled selected>Select Department</option>
+						@foreach (var dept in ViewBag.Departments)
+						{
+							<option value="@dept.DeptId">@dept.Dept_Name</option>
+						}
+					</select>
+					<label>Select Department</label>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-floating">
+					<select class="form-select" id="Year1" name="Year1" aria-required="true">
+						<option value="" disabled selected>Select Year</option>
+					</select>
+					<label>Select Year</label>
+				</div>
+			</div>
+		}
+
+		<div class="text-center my-3">
+			<button type="submit" class="btn btn-primary px-4">Submit</button>
+		</div>
+	</div>
+
+</form>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const deptSelect = document.getElementById("Dept1");
+		const yearSelect = document.getElementById("Year1");
+		deptSelect.addEventListener("change", function () {
+			const deptId = this.value;
+			yearSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+
+			fetch(`/Home/GetYearsForRemainingDept?deptId=${deptId}`)
+				.then(response => response.json())
+					.then(data => {
+
+						yearSelect.innerHTML = `<option value="" disabled selected>Select Year</option>`;
+
+						data.forEach(year => {
+							let option = document.createElement("option");
+							option.value = year.classId;
+							option.textContent = year.class_Name;
+							yearSelect.appendChild(option);
+				});
+			})
+				.catch(error => console.error("Error fetching years:", error));
+		});
+
+	});
+</script>
+
+
+<div class="row">
+	<div class="col-lg-12 col-md-6" style="text-align:center">
 		<h3>Generate timetable for departments</h3>
 	</div>
 	

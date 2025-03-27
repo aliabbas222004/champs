@@ -6,6 +6,7 @@
 @{
 	var timetable = ViewBag.Timetable as Dictionary<string, string>;
 	var timeSlots = ViewBag.TimeSlots as Dictionary<int, string>;
+	var subjects = ViewBag.subjectsToSelect as Dictionary<string, string>; 
 	string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 	List<dynamic> departments;
 	if(TempData.Peek("Departments")==null){
@@ -16,8 +17,23 @@
 	}
 
 }
+@{
+	@if (subjects != null && subjects.Any())
+	{
+		<h3 class="text-center">Important notifications</h3>
+
+			@foreach (var item in subjects) 
+			{
+				<p>You are requested to select the priority slotes for @item.Value. Click <a asp-area="" asp-controller="Home" asp-action="TeacherDashboard" asp-route-tid="@ViewBag.tid">here</a> to complete the action.</p>
+
+			}
+		<hr />
+	}
+	
+}
 
 <div class="text-center">
+
 
 	<h1 class="display-4">Your timetable</h1>
 	@{

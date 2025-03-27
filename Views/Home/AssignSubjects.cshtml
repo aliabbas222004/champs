@@ -1,0 +1,43 @@
+﻿<form method="post" asp-controller="Home" asp-action="AssignTeachers">
+    @if (ViewBag.SubjectTeachers != null)
+    {
+        @foreach (var subject in ViewBag.SubjectTeachers)
+        {
+            var subjectInfo = subject.Key;
+            <!-- Extract the composite key -->
+            <h3 class="text-center">For subject: @subjectInfo.SubjectName, the available teachers are:</h3>
+
+            <table class="table table-bordered table-striped">
+                @foreach (var teacher in subject.Value)
+                {
+                    <tr>
+                        <td class="text-center">@teacher.TeacherId</td>
+                        <td class="text-center">@teacher.TeacherName</td>
+                        <td class="text-center">@teacher.Designation</td>
+                        <td>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: @(teacher.WorkingHours * 100 / 36)%;"
+                                     aria-valuenow="@teacher.WorkingHours" aria-valuemin="0" aria-valuemax="36">
+                                    @teacher.WorkingHours / 36
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <input type="radio" name="selectedTeachers[@subjectInfo.SubjectId]" value="@teacher.TeacherId" required>
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+
+    }
+    else
+    {
+        <p class="text-center">No data available</p>
+    }
+
+    <div class="text-center mt-3">
+        <button type="submit" class="btn btn-primary">Assign Selected Teachers</button>
+    </div>
+</form>

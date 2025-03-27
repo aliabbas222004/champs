@@ -1,39 +1,88 @@
-﻿<h2 style="text-align:center">Select Department and class</h2>
+﻿@model List<DeptModel>
 
-<form asp-action="DisplayTimetable" asp-asp-controller="Home" method="post">
-	<div class="row mb-3 mt-3">
-		<div class="col-md-6 col-sm-4">
-			<div class="form-floating">
-				<select class="form-select" name="Department" aria-required="true">
-					<option value="" disabled selected>Select Department</option>
-					<option value="CSE">Computer Science (CSE)</option>
-					<option value="ECE">Electronics (ECE)</option>
-					<option value="EEE">Electrical (EEE)</option>
-					<option value="ME">Mechanical (ME)</option>
-					<option value="CE">Civil (CE)</option>
-				</select>
-				<label>Select Department</label>
-			</div>
-		</div>
+    @{
+    ViewData["Title"] = "Department Management";
+    }
 
-		<div class="col-md-6 col-sm-4">
-			<div class="form-floating">
-				<select class="form-select" name="Class" aria-required="true">
-					<option value="" disabled selected>Select Class</option>
-					<option value="BE-I">BE I</option>
-					<option value="BE-II">BE II</option>
-					<option value="BE-III">BE III</option>
-					<option value="BE-IV">BE IV</option>
-				</select>
-				<label>Select class</label>
-			</div>
-		</div>
+    <h2>Department Management</h2>
 
-		
-	</div>
+    <!-- ADD Department -->
+    <form method="post" asp-action="AddDepartment">
+        <input type="text" name="deptName" placeholder="Enter Department Name" required />
+        <button type="submit">Add</button>
+    </form>
 
-	<div class="text-center">
-		<button type="submit" class="btn btn-primary px-4">Submit</button>
-	</div>
-</form>
+    <hr />
+
+    <!-- List Departments -->
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+        @foreach (var dept in Model)
+    {
+        <tr>
+            <td>@dept.DeptId</td>
+            <td>
+                <form method="post" asp-action="UpdateDepartment">
+                    <input type="hidden" name="deptId" value="@dept.DeptId" />
+                    <input type="text" name="deptName" value="@dept.DeptName" required />
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+            <td>
+                <a asp-action="DeleteDepartment" asp-route-deptId="@dept.DeptId">Delete</a>
+            </td>
+        </tr>
+    }
+    </table>
+
+
+
+
+
+
+
+
+
+    @*<h2 style="text-align:center">Select Department and class</h2>
+
+    <form asp-action="DisplayTimetable" asp-asp-controller="Home" method="post">
+        <div class="row mb-3 mt-3">
+            <div class="col-md-6 col-sm-4">
+                <div class="form-floating">
+                    <select class="form-select" name="Department" aria-required="true">
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="CSE">Computer Science (CSE)</option>
+                        <option value="ECE">Electronics (ECE)</option>
+                        <option value="EEE">Electrical (EEE)</option>
+                        <option value="ME">Mechanical (ME)</option>
+                        <option value="CE">Civil (CE)</option>
+                    </select>
+                    <label>Select Department</label>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-4">
+                <div class="form-floating">
+                    <select class="form-select" name="Class" aria-required="true">
+                        <option value="" disabled selected>Select Class</option>
+                        <option value="BE-I">BE I</option>
+                        <option value="BE-II">BE II</option>
+                        <option value="BE-III">BE III</option>
+                        <option value="BE-IV">BE IV</option>
+                    </select>
+                    <label>Select class</label>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary px-4">Submit</button>
+        </div>
+    </form>*@
 

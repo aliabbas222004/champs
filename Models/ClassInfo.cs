@@ -65,4 +65,49 @@ namespace trySupa.Models
         [ForeignKey("DeptId")]
         public Dept Department { get; set; }
     }
+
+
+    public class TeacherSubject
+    {
+        [Key, Column(Order = 1)]
+        public int TeacherId { get; set; }
+
+        [Key, Column(Order = 2)]
+        public string SubjectId { get; set; }
+
+        [Key, Column(Order = 3)]
+        public int DeptId { get; set; }
+
+        [Key, Column(Order = 4)]
+        public int ClassId { get; set; }
+
+        // Navigation Properties
+        [ForeignKey(nameof(TeacherId))]
+        public virtual Teacher Teacher { get; set; }
+
+        [ForeignKey(nameof(SubjectId))]
+        public virtual Subject Subject { get; set; }
+
+        [ForeignKey(nameof(DeptId))]
+        public virtual Dept Department { get; set; }
+
+        [ForeignKey(nameof(ClassId))]
+        public virtual ClassInfo Year { get; set; }
+    }
+
+
+    public class TeachSubj
+    {
+        [Key, Column(Order = 1)]
+        public int TeacherId { get; set; }
+
+        [Key, Column(Order = 2)]
+        public string SubjectId { get; set; }
+
+        [ForeignKey("TeacherId")]
+        public Teacher Teacher { get; set; }
+
+        [ForeignKey("SubjectId")]
+        public Subject Subject { get; set; }
+    }
 }

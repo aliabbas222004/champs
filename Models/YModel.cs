@@ -1,130 +1,117 @@
 ﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
-using System;
-
-[Table("y")]
-public class YModel : BaseModel
-{
-    [Column("id")]
-    public long Id { get; set; }
-
-    [Column("name")]
-    public string Name { get; set; }
-}
-
-
 
 [Table("dept")]
 public class DeptModel : BaseModel
 {
-    [PrimaryKey("Dept_id")]
-    public int DeptId { get; set; }
+    [PrimaryKey("deptid")]
+    public int? DeptId { get; set; }   
 
-    [Column("Dept_Name")]
+
+    [Column("dept_name")]
     public string DeptName { get; set; }
 }
-
-[Table("Class")]
-public class ClassModel : BaseModel
+[Table("classinfo")]
+public class ClassInfoModel : BaseModel
 {
-    [PrimaryKey("Class_id")]
+    [PrimaryKey("classid")]
     public int ClassId { get; set; }
 
-    [Column("Class_Name")]
+    [Column("class_name")]
     public string ClassName { get; set; }
 
-    [Column("No_of_groups")]
+    [Column("no_of_groups")]
     public int NoOfGroups { get; set; }
 
     [Reference(typeof(DeptModel), ReferenceAttribute.JoinType.Inner)]
+    [Column("deptid")]
     public int DeptId { get; set; }
 }
-
-[Table("Subject")]
+[Table("subject")]
 public class SubjectModel : BaseModel
 {
-    [PrimaryKey("Sub_id")]
-    public int SubId { get; set; }
+    [PrimaryKey("subjectid")]
+    public int SubjectId { get; set; }
 
-    [Column("Sub_Name")]
-    public string SubName { get; set; }
+    [Column("subject_name")]
+    public string SubjectName { get; set; }
 
-    [Column("No_of_hours_per_week")]
+    [Column("no_of_hours_per_week")]
     public int NoOfHoursPerWeek { get; set; }
 
-    [Column("Time_of_lecture")]
+    [Column("time_of_lecture")]
     public int TimeOfLecture { get; set; }
 }
-
-[Table("Teacher")]
+[Table("teacher")]
 public class TeacherModel : BaseModel
 {
-    [PrimaryKey("Teacher_id")]
+    [PrimaryKey("teacherid")]
     public int TeacherId { get; set; }
 
-    [Column("Password")]
+    [Column("teacher_name")]
+    public string TeacherName { get; set; }
+
+    [Column("password")]
     public string Password { get; set; }
 
-    [Column("Name")]
-    public string Name { get; set; }
-
-    [Column("Designation")]
+    [Column("designation")]
     public string Designation { get; set; }
 }
-
-[Table("Occupied")]
-public class OccupiedModel : BaseModel
+[Table("subyeardept")]
+public class SubYearDeptModel : BaseModel
 {
-    [PrimaryKey("Teacher_id, Day, TimeSlot")]
+    [PrimaryKey("subjectid")]
+    [Column("subjectid")]
+    public int SubjectId { get; set; }
+
+    [PrimaryKey("classid")]
+    [Column("classid")]
+    public int ClassId { get; set; }
+
+    [PrimaryKey("deptid")]
+    [Column("deptid")]
+    public int DeptId { get; set; }
+}
+[Table("timetable")]
+public class TimetableModel : BaseModel
+{
+    [PrimaryKey("timetableid")]
+    public int TimetableId { get; set; }
+
+    [Reference(typeof(TeacherModel), ReferenceAttribute.JoinType.Inner)]
+    [Column("teacherid")]
     public int TeacherId { get; set; }
 
-    [Column("Day")]
+    [Column("day")]
     public string Day { get; set; }
 
-    [Column("TimeSlot")]
+    [Column("timeslot")]
     public int TimeSlot { get; set; }
 
     [Reference(typeof(DeptModel), ReferenceAttribute.JoinType.Inner)]
+    [Column("deptid")]
     public int DeptId { get; set; }
 
-    [Reference(typeof(ClassModel), ReferenceAttribute.JoinType.Inner)]
+    [Reference(typeof(ClassInfoModel), ReferenceAttribute.JoinType.Inner)]
+    [Column("classid")]
     public int ClassId { get; set; }
 
     [Reference(typeof(SubjectModel), ReferenceAttribute.JoinType.Inner)]
+    [Column("subid")]
     public int SubId { get; set; }
 }
-
-[Table("FreeSlots")]
-public class FreeSlotsModel : BaseModel
+[Table("remainingsubjectstochoose")]
+public class RemainingSubjectsToChooseModel : BaseModel
 {
-    [PrimaryKey("Teacher_id, Day, TimeSlot")]
-    public int TeacherId { get; set; }
+    [PrimaryKey("subjectid")]
+    [Column("subjectid")]
+    public int SubjectId { get; set; }  
 
-    [Column("Day")]
-    public string Day { get; set; }
-
-    [Column("TimeSlot")]
-    public int TimeSlot { get; set; }
-}
-
-[Table("Preferences")]
-public class PreferencesModel : BaseModel
-{
-    [PrimaryKey("Teacher_id, Day, TimeSlot")]
-    public int TeacherId { get; set; }
-
-    [Column("Day")]
-    public string Day { get; set; }
-
-    [Column("TimeSlot")]
-    public int TimeSlot { get; set; }
-
-    [Reference(typeof(DeptModel), ReferenceAttribute.JoinType.Inner)]
-    public int DeptId { get; set; }
-
-    [Reference(typeof(ClassModel), ReferenceAttribute.JoinType.Inner)]
+    [PrimaryKey("classid")]
+    [Column("classid")]
     public int ClassId { get; set; }
 
-    [Reference(typeof(SubjectModel), ReferenceAttribute.JoinType.Inner)]
-    public int SubId { get; set; }
+    [PrimaryKey("deptid")]
+    [Column("deptid")]
+    public int DeptId { get; set; }
 }
