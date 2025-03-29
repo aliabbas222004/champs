@@ -20,7 +20,7 @@ public class HomeController : Controller
     //{
     //    _supabaseService.GetDeptDataAsync();
     //        return View();
-        
+
     //}
     List<TimetableEntry> AllTeachertimetable = new List<TimetableEntry>
         {
@@ -92,10 +92,10 @@ public class HomeController : Controller
 
     List<SubYearDept> subYearDepts = new List<SubYearDept>()
     {
-        new SubYearDept { SubjectId = "301", ClassId = 201, DeptId = 101 }, 
-        new SubYearDept { SubjectId = "302", ClassId = 202, DeptId = 101 }, 
-        new SubYearDept { SubjectId = "303", ClassId = 203, DeptId = 101 }, 
-        new SubYearDept { SubjectId = "304", ClassId = 204, DeptId = 101 }, 
+        new SubYearDept { SubjectId = "301", ClassId = 201, DeptId = 101 },
+        new SubYearDept { SubjectId = "302", ClassId = 202, DeptId = 101 },
+        new SubYearDept { SubjectId = "303", ClassId = 203, DeptId = 101 },
+        new SubYearDept { SubjectId = "304", ClassId = 204, DeptId = 101 },
         new SubYearDept { SubjectId = "305", ClassId = 205, DeptId = 101 },
         new SubYearDept { SubjectId = "306", ClassId = 205, DeptId = 101 },
         new SubYearDept { SubjectId = "307", ClassId = 206, DeptId = 102 },
@@ -140,18 +140,18 @@ public class HomeController : Controller
             return RedirectToAction("Index");
         }
         var result = (from ts in teacherSubjectsSelectedByAdmin
-                           join t in teacher on ts.TeacherId equals t.TeacherId
-                           join s in s1 on ts.SubjectId equals s.SubjectId
-                           join d in dept on ts.DeptId equals d.DeptId
-                           join c in classinfo on ts.ClassId equals c.ClassId
-                           where ts.TeacherId == tid
-                           select new
-                           {
-                               TeacherName = t.Teacher_Name,
-                               SubjectName = s.Subject_Name,
-                               DepartmentName = d.Dept_Name,
-                               ClassName = c.Class_Name
-                           }).ToList();
+                      join t in teacher on ts.TeacherId equals t.TeacherId
+                      join s in s1 on ts.SubjectId equals s.SubjectId
+                      join d in dept on ts.DeptId equals d.DeptId
+                      join c in classinfo on ts.ClassId equals c.ClassId
+                      where ts.TeacherId == tid
+                      select new
+                      {
+                          TeacherName = t.Teacher_Name,
+                          SubjectName = s.Subject_Name,
+                          DepartmentName = d.Dept_Name,
+                          ClassName = c.Class_Name
+                      }).ToList();
         var timetable = AllTeachertimetable.Where(t => t.TeacherId == tid).ToList();
 
         var structuredTimetable = new Dictionary<string, string>();
@@ -187,7 +187,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult Register(string TeacherId,string Teacher_Name,string Password,string Designation)
+    public IActionResult Register(string TeacherId, string Teacher_Name, string Password, string Designation)
     {
         if (Password != "1234567890")
         {
@@ -195,17 +195,17 @@ public class HomeController : Controller
             return View("Register");
         }
         TempData["TeacherToken"] = "Yes";
-        TempData["tid"]=TeacherId;
-        Teacher t1=new Teacher()
+        TempData["tid"] = TeacherId;
+        Teacher t1 = new Teacher()
         {
-            TeacherId=int.Parse(TeacherId),
-            Teacher_Name=Teacher_Name,
-            Password=Password,
-            Designation=Designation
+            TeacherId = int.Parse(TeacherId),
+            Teacher_Name = Teacher_Name,
+            Password = Password,
+            Designation = Designation
         };
         teacher.Add(t1);
         HttpContext.Session.SetString("TeacherToken", "Yes");
-        return RedirectToAction("TeacherDashboard",new {tid=int.Parse(TeacherId)});
+        return RedirectToAction("TeacherDashboard", new { tid = int.Parse(TeacherId) });
     }
 
     public IActionResult LoginAsAdmin()
@@ -215,7 +215,7 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult LoginAsAdmin(string adminPassword)
     {
-        if (string.IsNullOrEmpty(adminPassword) || adminPassword!="1234@4321")
+        if (string.IsNullOrEmpty(adminPassword) || adminPassword != "1234@4321")
         {
             ViewBag.ErrorMessage = "Incorrect password!";
             return View("LoginAsAdmin");
@@ -235,8 +235,8 @@ public class HomeController : Controller
             return RedirectToAction("Index");
         }
         var years = AllTeachertimetable.Select(y => y.ClassId).Distinct().ToList();
-        var yearNames = classinfo.Where(c => !years.Contains(c.ClassId)).Select(c =>c.DeptId).Distinct().ToList();
-        var depts = dept.Where(d=>yearNames.Contains(d.DeptId)).Select(d =>new { d.DeptId, d.Dept_Name }).ToList();
+        var yearNames = classinfo.Where(c => !years.Contains(c.ClassId)).Select(c => c.DeptId).Distinct().ToList();
+        var depts = dept.Where(d => yearNames.Contains(d.DeptId)).Select(d => new { d.DeptId, d.Dept_Name }).ToList();
         ViewBag.Departments = depts;
         TempData["AdminToken"] = "Yes";
 
@@ -250,7 +250,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult Login(string TeacherID,string Password)
+    public IActionResult Login(string TeacherID, string Password)
     {
         var t = teacher.FirstOrDefault(t => t.TeacherId.ToString() == TeacherID && t.Password == Password);
         if (t == null)
@@ -261,8 +261,8 @@ public class HomeController : Controller
         {
             HttpContext.Session.SetString("TeacherToken", "Yes");
             TempData["TeacherToken"] = "Yes";
-            TempData["tid"]= TeacherID;
-            TempData["Departments"]= JsonConvert.SerializeObject(dept.Select(d => new { d.DeptId, d.Dept_Name }).ToList());
+            TempData["tid"] = TeacherID;
+            TempData["Departments"] = JsonConvert.SerializeObject(dept.Select(d => new { d.DeptId, d.Dept_Name }).ToList());
             return RedirectToAction("TeacherDashboard", new { tid = t.TeacherId });
         }
 
@@ -270,15 +270,16 @@ public class HomeController : Controller
 
 
     [HttpPost]
-    public IActionResult DisplayTimetable(string Department, string Class)
+    public async Task<IActionResult> DisplayTimetable(string Department, string Class)
     {
-        var timetable = AllTeachertimetable.ToList();
+        var timetable = await _supabaseService.GetTimetable();
+        //var timetable = AllTeachertimetable.ToList();
         var classId = classinfo.Where(c => c.Class_Name == Class).Select(c => c.ClassId).FirstOrDefault();
-        var deptId=dept.Where(d=>d.Dept_Name==Department).Select(d=>d.DeptId).FirstOrDefault();
+        var deptId = dept.Where(d => d.Dept_Name == Department).Select(d => d.DeptId).FirstOrDefault();
         var filteredTimetable = timetable
         .Where(t => t.DeptId == deptId && t.ClassId == classId)
         .OrderBy(t => t.Day)
-        .ThenBy(t => t.Timeslot)
+        .ThenBy(t => t.TimeSlot)
         .ToList();
 
 
@@ -286,7 +287,7 @@ public class HomeController : Controller
 
         foreach (var entry in filteredTimetable)
         {
-            string key = $"{entry.Timeslot}_{entry.Day}";
+            string key = $"{entry.TimeSlot}_{entry.Day}";
             string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
             string teacherName = teacher.FirstOrDefault(c => c.TeacherId == entry.TeacherId)?.Teacher_Name ?? "Unknown";
             structuredTimetable[key] = $"{subjectName}<br>{teacherName}";
@@ -310,7 +311,7 @@ public class HomeController : Controller
 
 
     [HttpPost]
-    public IActionResult SelectSubjectToTeach(string teacher_id, string Dept,string Year,string Subject)
+    public IActionResult SelectSubjectToTeach(string teacher_id, string Dept, string Year, string Subject)
     {
         var timetable = AllTeachertimetable.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
         var no_of_hours = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.No_of_Hours_per_Week).FirstOrDefault();
@@ -328,7 +329,7 @@ public class HomeController : Controller
 
         ViewBag.TimeSlots = timeSlots;
         ViewBag.Timetable = structuredTimetable;
-        ViewBag.Subject = s1.Where(s=>s.SubjectId==(Subject)).Select(s=>s.Subject_Name).FirstOrDefault();
+        ViewBag.Subject = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.Subject_Name).FirstOrDefault();
         ViewBag.Dept = dept.Where(d => d.DeptId == int.Parse(Dept)).Select(s => s.Dept_Name).FirstOrDefault();
         ViewBag.Year = classinfo.Where(c => c.ClassId == int.Parse(Year)).Select(c => c.Class_Name).FirstOrDefault();
         ViewBag.No_Of_Hours_Per_Week = no_of_hours;
@@ -392,8 +393,8 @@ public class HomeController : Controller
     public JsonResult GetSubjects(int deptId, int yearId)
     {
         var subjects = remainingSubjects.Where(s => s.DeptId == deptId && s.ClassId == yearId)
-                        .Select(s =>s.SubjectId).ToList();
-        var subNames=s1.Where(s=>subjects.Contains(s.SubjectId)).Select(s=>new {s.SubjectId,s.Subject_Name}).ToList();  
+                        .Select(s => s.SubjectId).ToList();
+        var subNames = s1.Where(s => subjects.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name }).ToList();
         return Json(subNames);
     }
 
@@ -408,7 +409,7 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult AssignSubjects(string Dept1, string Year1)
     {
-        var subj= subYearDepts.Where(s => s.DeptId == int.Parse(Dept1) && s.ClassId == int.Parse(Year1)).Select(s => s.SubjectId);
+        var subj = subYearDepts.Where(s => s.DeptId == int.Parse(Dept1) && s.ClassId == int.Parse(Year1)).Select(s => s.SubjectId);
         var subinfo = s1.Where(s => subj.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name });
         var subjectTeachers = teachSubj
     .Where(ts => subinfo.Select(s => s.SubjectId).Contains(ts.SubjectId))
@@ -435,12 +436,12 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public IActionResult GenerateTimeTable(string Dept,string Year)
+    public IActionResult GenerateTimeTable(string Dept, string Year)
     {
-        
-        var remainingSubjectsToSelect = remainingSubjects.Where(s=>s.DeptId==int.Parse(Dept) && s.ClassId==int.Parse(Year)).Select(s=>s.SubjectId);
+
+        var remainingSubjectsToSelect = remainingSubjects.Where(s => s.DeptId == int.Parse(Dept) && s.ClassId == int.Parse(Year)).Select(s => s.SubjectId);
         TempData["Success"] = false;
-        if (remainingSubjectsToSelect.Count()==0){
+        if (remainingSubjectsToSelect.Count() == 0) {
             TempData["AlertMessage"] = "Timetable generated successfully!";
             TempData["Success"] = true;
 
@@ -455,7 +456,7 @@ public class HomeController : Controller
             }
             TempData["AlertMessage"] = "The subject -->" + message + "  are not selected by any teacher";
         }
-            return RedirectToAction("AdminDashboard");
+        return RedirectToAction("AdminDashboard");
     }
 
 
@@ -480,7 +481,7 @@ public class HomeController : Controller
         var yearNames = classinfo
             .Where(c => c.DeptId == int.Parse(deptId) && !years.Contains(c.ClassId))
             .Select(c => new { c.ClassId, c.Class_Name })
-            .ToList(); 
+            .ToList();
         return Json(yearNames);
     }
 
@@ -558,8 +559,8 @@ public class HomeController : Controller
     {
         return designation switch
         {
-            "Dean"=>5,
-            "HOD"=>4,
+            "Dean" => 5,
+            "HOD" => 4,
             "Professor" => 3,
             "Associate Professor" => 2,
             "Assistant Professor" => 1,
@@ -587,7 +588,7 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> UpdateDepartment(int deptId, string deptName)
     {
-        var updatedDept = new DeptModel { DeptId = deptId, DeptName = deptName+"0" };
+        var updatedDept = new DeptModel { DeptId = deptId, DeptName = deptName + "0" };
         await _supabaseService.UpdateDepartment(updatedDept);
         return RedirectToAction("Index");
     }
@@ -597,7 +598,7 @@ public class HomeController : Controller
     {
         await _supabaseService.DeleteDepartment(deptId);
         return RedirectToAction("Index");
-     }
+    }
 
 
     // ✅ ClassInfo CRUD
@@ -645,18 +646,18 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateSubject(int subjectId, string subjectName, int noOfHoursPerWeek, int timeOfLecture)
-    {
-        var updatedSubject = new SubjectModel { SubjectId = subjectId, SubjectName = subjectName, NoOfHoursPerWeek = noOfHoursPerWeek, TimeOfLecture = timeOfLecture };
-        await _supabaseService.UpdateSubject(updatedSubject);
-        return RedirectToAction("GetAllSubjects");
-    }
+    //public async Task<IActionResult> UpdateSubject(int subjectId, string subjectName, int noOfHoursPerWeek, int timeOfLecture)
+    //{
+    //    var updatedSubject = new SubjectModel { SubjectId = subjectId, SubjectName = subjectName, NoOfHoursPerWeek = noOfHoursPerWeek, TimeOfLecture = timeOfLecture };
+    //    await _supabaseService.UpdateSubject(updatedSubject);
+    //    return RedirectToAction("GetAllSubjects");
+    //}
 
-    public async Task<IActionResult> DeleteSubject(int subjectId)
-    {
-        await _supabaseService.DeleteSubject(subjectId);
-        return RedirectToAction("GetAllSubjects");
-    }
+    //public async Task<IActionResult> DeleteSubject(int subjectId)
+    //{
+    //    await _supabaseService.DeleteSubject(subjectId);
+    //    return RedirectToAction("GetAllSubjects");
+    //}
 
     // ✅ Teacher CRUD
     public async Task<IActionResult> GetAllTeachers()
@@ -694,21 +695,21 @@ public class HomeController : Controller
         return View(timetables);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddTimetable(int teacherId, string day, int timeSlot, int deptId, int classId, int subId)
-    {
-        var newTimetable = new TimetableModel { TeacherId = teacherId, Day = day, TimeSlot = timeSlot, DeptId = deptId, ClassId = classId, SubId = subId };
-        await _supabaseService.AddTimetable(newTimetable);
-        return RedirectToAction("GetAllTimetables");
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> AddTimetable(int teacherId, string day, int timeSlot, int deptId, int classId, int subId)
+    //{
+    //    var newTimetable = new TimetableModel { TeacherId = teacherId, Day = day, TimeSlot = timeSlot, DeptId = deptId, ClassId = classId, SubId = subId };
+    //    await _supabaseService.AddTimetable(newTimetable);
+    //    return RedirectToAction("GetAllTimetables");
+    //}
 
-    [HttpPost]
-    public async Task<IActionResult> UpdateTimetable(int timetableId, int teacherId, string day, int timeSlot, int deptId, int classId, int subId)
-    {
-        var updatedTimetable = new TimetableModel { TimetableId = timetableId, TeacherId = teacherId, Day = day, TimeSlot = timeSlot, DeptId = deptId, ClassId = classId, SubId = subId };
-        await _supabaseService.UpdateTimetable(updatedTimetable);
-        return RedirectToAction("GetAllTimetables");
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> UpdateTimetable(int timetableId, int teacherId, string day, int timeSlot, int deptId, int classId, int subId)
+    //{
+    //    var updatedTimetable = new TimetableModel { TimetableId = timetableId, TeacherId = teacherId, Day = day, TimeSlot = timeSlot, DeptId = deptId, ClassId = classId, SubId = subId };
+    //    await _supabaseService.UpdateTimetable(updatedTimetable);
+    //    return RedirectToAction("GetAllTimetables");
+    //}
 
     public async Task<IActionResult> DeleteTimetable(int timetableId)
     {
@@ -723,27 +724,27 @@ public class HomeController : Controller
         return View(subYearDepts);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddSubYearDept(int subjectId, int classId, int deptId)
-    {
-        var newSubYearDept = new SubYearDeptModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
-        await _supabaseService.AddSubYearDept(newSubYearDept);
-        return RedirectToAction("GetAllSubYearDepts");
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> AddSubYearDept(int subjectId, int classId, int deptId)
+    //{
+    //    var newSubYearDept = new SubYearDeptModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
+    //    await _supabaseService.AddSubYearDept(newSubYearDept);
+    //    return RedirectToAction("GetAllSubYearDepts");
+    //}
 
-    [HttpPost]
-    public async Task<IActionResult> UpdateSubYearDept(int subjectId, int classId, int deptId)
-    {
-        var updatedSubYearDept = new SubYearDeptModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
-        await _supabaseService.UpdateSubYearDept(updatedSubYearDept);
-        return RedirectToAction("GetAllSubYearDepts");
-    }
+    //[HttpPost]
+    //public async Task<IActionResult> UpdateSubYearDept(int subjectId, int classId, int deptId)
+    //{
+    //    var updatedSubYearDept = new SubYearDeptModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
+    //    await _supabaseService.UpdateSubYearDept(updatedSubYearDept);
+    //    return RedirectToAction("GetAllSubYearDepts");
+    //}
 
-    public async Task<IActionResult> DeleteSubYearDept(int subjectId, int classId, int deptId)
-    {
-        await _supabaseService.DeleteSubYearDept(subjectId, classId, deptId);
-        return RedirectToAction("GetAllSubYearDepts");
-    }
+    //public async Task<IActionResult> DeleteSubYearDept(int subjectId, int classId, int deptId)
+    //{
+    //    await _supabaseService.DeleteSubYearDept(subjectId, classId, deptId);
+    //    return RedirectToAction("GetAllSubYearDepts");
+    //}
 
 
 }

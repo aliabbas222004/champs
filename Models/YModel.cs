@@ -31,7 +31,7 @@ public class ClassInfoModel : BaseModel
 public class SubjectModel : BaseModel
 {
     [PrimaryKey("subjectid")]
-    public int SubjectId { get; set; }
+    public string SubjectId { get; set; }
 
     [Column("subject_name")]
     public string SubjectName { get; set; }
@@ -62,7 +62,7 @@ public class SubYearDeptModel : BaseModel
 {
     [PrimaryKey("subjectid")]
     [Column("subjectid")]
-    public int SubjectId { get; set; }
+    public string SubjectId { get; set; }
 
     [PrimaryKey("classid")]
     [Column("classid")]
@@ -98,14 +98,14 @@ public class TimetableModel : BaseModel
 
     [Reference(typeof(SubjectModel), ReferenceAttribute.JoinType.Inner)]
     [Column("subid")]
-    public int SubId { get; set; }
+    public string SubId { get; set; }
 }
 [Table("remainingsubjectstochoose")]
 public class RemainingSubjectsToChooseModel : BaseModel
 {
     [PrimaryKey("subjectid")]
     [Column("subjectid")]
-    public int SubjectId { get; set; }  
+    public string SubjectId { get; set; }  
 
     [PrimaryKey("classid")]
     [Column("classid")]

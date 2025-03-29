@@ -1,4 +1,4 @@
-﻿@model List<DeptModel>
+﻿@* @model List<DeptModel>
 
     @{
     ViewData["Title"] = "Department Management";
@@ -37,7 +37,7 @@
             </td>
         </tr>
     }
-    </table>
+    </table> *@
 
 
 
@@ -47,7 +47,7 @@
 
 
 
-    @*<h2 style="text-align:center">Select Department and class</h2>
+    <h2 style="text-align:center">Select Department and class</h2>
 
     <form asp-action="DisplayTimetable" asp-asp-controller="Home" method="post">
         <div class="row mb-3 mt-3">
@@ -84,5 +84,5 @@
         <div class="text-center">
             <button type="submit" class="btn btn-primary px-4">Submit</button>
         </div>
-    </form>*@
+    </form>
 

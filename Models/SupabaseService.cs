@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Supabase;
+using Supabase.Postgrest;
 using Supabase.Postgrest.Models;
 using System;
 using System.Collections.Generic;
@@ -151,7 +152,7 @@ public class SupabaseService
         }
     }
 
-    public async Task<bool> DeleteSubject(int subjectId)
+    public async Task<bool> DeleteSubject(string subjectId)
     {
         try
         {
@@ -213,7 +214,16 @@ public class SupabaseService
 
     // ✅ CRUD Operations for Timetable Table
     public async Task<List<TimetableModel>> GetTimetable() =>
-        (await _supabase.From<TimetableModel>().Select("*").Get()).Models;
+    (await _supabase
+        .From<TimetableModel>()
+        .Select("*")
+        .Get()).Models;
+
+
+
+
+
+
 
     public async Task<bool> AddTimetable(TimetableModel model)
     {
@@ -304,7 +314,7 @@ public class SupabaseService
         }
     }
 
-    public async Task<bool> DeleteSubYearDept(int subjectId, int classId, int deptId)
+    public async Task<bool> DeleteSubYearDept(string subjectId, int classId, int deptId)
     {
         try
         {
@@ -365,7 +375,7 @@ public class SupabaseService
         }
     }
 
-    public async Task<bool> DeleteRemainingSubject(int subjectId, int classId, int deptId)
+    public async Task<bool> DeleteRemainingSubject(string subjectId, int classId, int deptId)
     {
         try
         {
