@@ -53,28 +53,23 @@
         <div class="row mb-3 mt-3">
             <div class="col-md-6 col-sm-4">
                 <div class="form-floating">
-                    <select class="form-select" name="Department" aria-required="true">
-                        <option value="" disabled selected>Select Department</option>
-                        <option value="CSE">Computer Science (CSE)</option>
-                        <option value="ECE">Electronics (ECE)</option>
-                        <option value="EEE">Electrical (EEE)</option>
-                        <option value="ME">Mechanical (ME)</option>
-                        <option value="CE">Civil (CE)</option>
-                    </select>
+                <select class="form-select" name="Department" id="departmentDropdown">
+                    <option value="" disabled selected>Select Department</option>
+                    @foreach (var dept in ViewBag.Departments)
+                    {
+                        <option value="@dept.DeptId">@dept.DeptName</option>
+                    }
+                </select>
                     <label>Select Department</label>
                 </div>
             </div>
 
             <div class="col-md-6 col-sm-4">
                 <div class="form-floating">
-                    <select class="form-select" name="Class" aria-required="true">
-                        <option value="" disabled selected>Select Class</option>
-                        <option value="BE-I">BE I</option>
-                        <option value="BE-II">BE II</option>
-                        <option value="BE-III">BE III</option>
-                        <option value="BE-IV">BE IV</option>
-                    </select>
-                    <label>Select class</label>
+                <select class="form-select" name="Class" id="classDropdown">
+                    <option value="" disabled selected>Select Class</option>
+                </select>
+                <label>Select Class</label>
                 </div>
             </div>
 
@@ -86,3 +81,31 @@
         </div>
     </form>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const deptSelect = document.getElementById("departmentDropdown");
+        const yearSelect = document.getElementById("classDropdown");
+
+        deptSelect.addEventListener("change", function () {
+            const deptId = this.value;
+            yearSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+
+            fetch(`/Home/GetYears?deptId=${deptId}`)
+                .then(response => response.json())
+                    .then(data => {
+
+                        yearSelect.innerHTML = `<option value="" disabled selected>Select Year</option>`; // Clear previous options
+
+                        data.forEach(year => {
+                            let option = document.createElement("option");
+                            option.value = year.classId;
+                            option.textContent = year.class_Name;
+                            yearSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error fetching years:", error));
+            });
+
+        });
+
+</script>

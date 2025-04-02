@@ -402,6 +402,7 @@ public class HomeController : Controller
     [HttpGet]
     public JsonResult GetYears(string deptId)
     {
+        Console.WriteLine(deptId);
         var years = remainingSubjects.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
         var yearNames = classinfo.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.Class_Name }).ToList();
         foreach (var year in yearNames)
@@ -510,9 +511,6 @@ public class HomeController : Controller
 
 
 
-
-
-
     //Time table generation algo..................
 
 
@@ -595,7 +593,8 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var departments = await _supabaseService.GetDepartments();
-        return View(departments);
+        ViewBag.Departments = departments;
+        return View();
     }
 
     // ✅ Add New Department
