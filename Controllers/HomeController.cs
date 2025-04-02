@@ -171,8 +171,6 @@ public class HomeController : Controller
 );
 
         ViewBag.subjectsToSelect = subjectDict;
-
-        Console.WriteLine("Final ViewBag Count After Assignment: " + ((ViewBag.subjectsToSelect as List<dynamic>)?.Count ?? 0));
         ViewBag.TimeSlots = timeSlots;
         ViewBag.Timetable = structuredTimetable;
         ViewBag.tid = tid;
@@ -310,32 +308,57 @@ public class HomeController : Controller
 
 
 
-    [HttpPost]
+    //[HttpPost]
     public IActionResult SelectSubjectToTeach(string teacher_id, string Dept, string Year, string Subject)
     {
+
         var timetable = AllTeachertimetable.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
-        var no_of_hours = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.No_of_Hours_per_Week).FirstOrDefault();
+        var no_of_hours = s1.Where(s => s.Subject_Name == (Subject)).Select(s => s.No_of_Hours_per_Week).FirstOrDefault();
 
         var structuredTimetable = new Dictionary<string, string>();
 
         foreach (var entry in timetable)
         {
             string key = $"{entry.Timeslot}_{entry.Day}";
-            string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-            string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
-            string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
-            structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
+            //string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
+            //string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
+            //string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
+            structuredTimetable[key] = $"{Subject}<br>{Year}<br>{Dept}";
         }
 
         ViewBag.TimeSlots = timeSlots;
         ViewBag.Timetable = structuredTimetable;
-        ViewBag.Subject = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.Subject_Name).FirstOrDefault();
-        ViewBag.Dept = dept.Where(d => d.DeptId == int.Parse(Dept)).Select(s => s.Dept_Name).FirstOrDefault();
-        ViewBag.Year = classinfo.Where(c => c.ClassId == int.Parse(Year)).Select(c => c.Class_Name).FirstOrDefault();
+        ViewBag.Subject = Subject;
+        ViewBag.Dept = Dept;
+        ViewBag.Year = Year;
         ViewBag.No_Of_Hours_Per_Week = no_of_hours;
         ViewBag.tid = teacher_id;
 
         return View();
+
+        //var timetable = AllTeachertimetable.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
+        //var no_of_hours = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.No_of_Hours_per_Week).FirstOrDefault();
+
+        //var structuredTimetable = new Dictionary<string, string>();
+
+        //foreach (var entry in timetable)
+        //{
+        //    string key = $"{entry.Timeslot}_{entry.Day}";
+        //    string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
+        //    string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
+        //    string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
+        //    structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
+        //}
+
+        //ViewBag.TimeSlots = timeSlots;
+        //ViewBag.Timetable = structuredTimetable;
+        //ViewBag.Subject = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.Subject_Name).FirstOrDefault();
+        //ViewBag.Dept = dept.Where(d => d.DeptId == int.Parse(Dept)).Select(s => s.Dept_Name).FirstOrDefault();
+        //ViewBag.Year = classinfo.Where(c => c.ClassId == int.Parse(Year)).Select(c => c.Class_Name).FirstOrDefault();
+        //ViewBag.No_Of_Hours_Per_Week = no_of_hours;
+        //ViewBag.tid = teacher_id;
+
+        //return View();
     }
 
     public IActionResult SaveSelectedSlots([FromBody] SlotSelectionModel model)
