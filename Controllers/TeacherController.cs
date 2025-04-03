@@ -4,9 +4,8 @@ namespace trySupa.Controllers
 {
     public class TeacherController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Register()
         {
-            
             return View();
         }
     }

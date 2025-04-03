@@ -179,10 +179,7 @@ public class HomeController : Controller
 
     }
 
-    public IActionResult Register()
-    {
-        return View();
-    }
+    
 
     [HttpPost]
     public IActionResult Register(string TeacherId, string Teacher_Name, string Password, string Designation)
@@ -245,6 +242,21 @@ public class HomeController : Controller
     public IActionResult Login()
     {
         return View();
+    }
+
+    public async Task<IActionResult> TeacherInterest(string tid)
+    {
+        var subjects = await _supabaseService.GetSubjects();
+        ViewBag.tid = tid;
+        return View(subjects);
+    }
+
+    [HttpPost]
+    public IActionResult SubmitInterstedSubjects(string tid,string selectedSubjects)
+    {
+        var selectedSubjectIds = selectedSubjects.Split(',');
+        ViewBag.tid = tid;
+        return RedirectToAction("Index");
     }
 
     [HttpPost]

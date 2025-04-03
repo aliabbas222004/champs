@@ -1,0 +1,65 @@
+﻿@model List<SubjectModel>
+
+@{
+    ViewData["Title"] = "Teacher Interest";
+}
+
+<h2 class="text-center">Select the subjects of your interest</h2>
+
+@if (Model != null && Model.Any())
+{
+    <select id="subjectSelect" class="form-select">
+        <option value="" disabled selected>Select Subjects</option>
+        @foreach (var subject in Model)
+        {
+            <option value="@subject.SubjectId">@subject.SubjectName</option>
+        }
+    </select>
+
+    <h4 class="mt-3">Selected Subjects:</h4>
+    <ul id="selectedSubjects" class="list-group"></ul>
+
+    <form id="subjectForm" method="post" asp-controller="Home" asp-action="SubmitInterstedSubjects" asp-route-tid="@ViewBag.tid" class="mt-3">
+        <input type="hidden" id="selectedSubjectIds" name="selectedSubjects">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+        let selectedSubjects = new Set(); 
+        const subjectSelect = document.getElementById("subjectSelect");
+        const selectedSubjectsList = document.getElementById("selectedSubjects");
+        const hiddenInput = document.getElementById("selectedSubjectIds");
+
+        subjectSelect.addEventListener("change", function () {
+            let selectedOption = subjectSelect.options[subjectSelect.selectedIndex];
+
+            if (selectedOption.value && !selectedSubjects.has(selectedOption.value)) {
+                selectedSubjects.add(selectedOption.value);
+
+                let li = document.createElement("li");
+                li.textContent = selectedOption.text;
+                li.className="list-group-item";
+                li.dataset.id = selectedOption.value;
+                li.addEventListener("click", () => removeSubject(li));
+                selectedSubjectsList.appendChild(li);
+            }
+
+            updateHiddenInput();
+        });
+
+        function removeSubject(li) {
+            selectedSubjects.delete(li.dataset.id);
+            li.remove();
+            updateHiddenInput();
+        }
+
+        function updateHiddenInput() {
+            hiddenInput.value = Array.from(selectedSubjects).join(",");
+        }
+    </script>
+}
+else
+{
+    <p class="text-center text-danger">No subjects found.</p>
+}
+
