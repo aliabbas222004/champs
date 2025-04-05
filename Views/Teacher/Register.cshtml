@@ -12,7 +12,7 @@
                 @ViewBag.ErrorMessage
             }
         </div>
-        <form id="registerForm" method="post" asp-action="Register" asp-controller="Home">
+        <form id="registerForm" method="post" asp-action="Register" asp-controller="Teacher">
             <hr />
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
@@ -34,7 +34,7 @@
             </div>
 
             <div class="form-floating mb-3">
-                <input class="form-control" aria-required="true" id="Admin_Password" placeholder="Password given by admin" />
+                <input class="form-control" aria-required="true" name="Admin_Password" id="Admin_Password" placeholder="Password given by admin" />
                 <label>Enter password given by admin</label>
             </div>
 

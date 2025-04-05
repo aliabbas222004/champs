@@ -21,5 +21,12 @@ namespace trySupa.Controllers
             return RedirectToAction("AdminDashboard","Home");
 
         }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData.Clear();
+            return RedirectToAction("Index","Home");
+        }
     }
 }

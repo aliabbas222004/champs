@@ -46,6 +46,7 @@ public class SubjectModel : BaseModel
 public class TeacherModel : BaseModel
 {
     [PrimaryKey("teacherid")]
+    [Column("teacherid")]
     public int TeacherId { get; set; }
 
     [Column("teacher_name")]

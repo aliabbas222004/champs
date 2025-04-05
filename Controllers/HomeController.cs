@@ -181,27 +181,7 @@ public class HomeController : Controller
 
     
 
-    [HttpPost]
-    public IActionResult Register(string TeacherId, string Teacher_Name, string Password, string Designation)
-    {
-        if (Password != "1234567890")
-        {
-            ViewBag.ErrorMessage = "Invalid admin password!";
-            return View("Register");
-        }
-        TempData["TeacherToken"] = "Yes";
-        TempData["tid"] = TeacherId;
-        Teacher t1 = new Teacher()
-        {
-            TeacherId = int.Parse(TeacherId),
-            Teacher_Name = Teacher_Name,
-            Password = Password,
-            Designation = Designation
-        };
-        teacher.Add(t1);
-        HttpContext.Session.SetString("TeacherToken", "Yes");
-        return RedirectToAction("TeacherDashboard", new { tid = int.Parse(TeacherId) });
-    }
+    
 
     
     
@@ -225,10 +205,7 @@ public class HomeController : Controller
     }
 
 
-    public IActionResult Login()
-    {
-        return View();
-    }
+    
 
     public async Task<IActionResult> TeacherInterest(string tid)
     {
@@ -243,25 +220,6 @@ public class HomeController : Controller
         var selectedSubjectIds = selectedSubjects.Split(',');
         ViewBag.tid = tid;
         return RedirectToAction("Index");
-    }
-
-    [HttpPost]
-    public IActionResult Login(string TeacherID, string Password)
-    {
-        var t = teacher.FirstOrDefault(t => t.TeacherId.ToString() == TeacherID && t.Password == Password);
-        if (t == null)
-        {
-            return View("Login");
-        }
-        else
-        {
-            HttpContext.Session.SetString("TeacherToken", "Yes");
-            TempData["TeacherToken"] = "Yes";
-            TempData["tid"] = TeacherID;
-            TempData["Departments"] = JsonConvert.SerializeObject(dept.Select(d => new { d.DeptId, d.Dept_Name }).ToList());
-            return RedirectToAction("TeacherDashboard", new { tid = t.TeacherId });
-        }
-
     }
 
 
@@ -297,12 +255,7 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Logout()
-    {
-        HttpContext.Session.Clear();
-        TempData.Clear();
-        return RedirectToAction("Index");
-    }
+    
 
 
 
