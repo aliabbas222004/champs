@@ -561,7 +561,7 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> UpdateDepartment(int deptId, string deptName)
     {
-        var updatedDept = new DeptModel { DeptId = deptId, DeptName = deptName + "0" };
+        var updatedDept = new DeptModel { DeptId = deptId, DeptName = deptName  };
         await _supabaseService.UpdateDepartment(updatedDept);
         return RedirectToAction("Index");
     }
@@ -690,12 +690,12 @@ public class HomeController : Controller
         return RedirectToAction("GetAllTimetables");
     }
 
-    // ✅ SubYearDept CRUD
-    public async Task<IActionResult> GetAllSubYearDepts()
-    {
-        var subYearDepts = await _supabaseService.GetSubYearDept();
-        return View(subYearDepts);
-    }
+        // ✅ SubYearDept CRUD
+        public async Task<IActionResult> GetAllSubYearDepts()
+        {
+            var subYearDepts = await _supabaseService.GetSubYearDept();
+            return View(subYearDepts);
+        }
 
     //[HttpPost]
     //public async Task<IActionResult> AddSubYearDept(int subjectId, int classId, int deptId)
@@ -718,6 +718,87 @@ public class HomeController : Controller
     //    await _supabaseService.DeleteSubYearDept(subjectId, classId, deptId);
     //    return RedirectToAction("GetAllSubYearDepts");
     //}
+    public async Task<IActionResult> GetAllTeacherSubjectsSelectedByAdmin()
+    {
+        var list = await _supabaseService.GetTeacherSubjectsSelectedByAdmin();
+        return View(list);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
+    {
+        var model = new TeacherSubjectsSelectedByAdminModel { TeacherId = teacherId, SubjectId = subjectId, DeptId = deptId, ClassId = classId };
+        await _supabaseService.AddTeacherSubjectsSelectedByAdmin(model);
+        return RedirectToAction("GetAllTeacherSubjectsSelectedByAdmin");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
+    {
+        var model = new TeacherSubjectsSelectedByAdminModel { TeacherId = teacherId, SubjectId = subjectId, DeptId = deptId, ClassId = classId };
+        await _supabaseService.UpdateTeacherSubjectsSelectedByAdmin(model);
+        return RedirectToAction("GetAllTeacherSubjectsSelectedByAdmin");
+    }
+
+    public async Task<IActionResult> DeleteTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
+    {
+        await _supabaseService.DeleteTeacherSubjectsSelectedByAdmin(teacherId, subjectId, deptId, classId);
+        return RedirectToAction("GetAllTeacherSubjectsSelectedByAdmin");
+    }
+    public async Task<IActionResult> GetAllTeacherSubjectInterests()
+    {
+        var list = await _supabaseService.GetTeacherSubjectInterests();
+        return View(list);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddTeacherSubjectInterest(int teacherId, string subjectId)
+    {
+        var model = new TeacherSubjectInterestModel { TeacherId = teacherId, SubjectId = subjectId };
+        await _supabaseService.AddTeacherSubjectInterest(model);
+        return RedirectToAction("GetAllTeacherSubjectInterests");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateTeacherSubjectInterest(int teacherId, string subjectId)
+    {
+        var model = new TeacherSubjectInterestModel { TeacherId = teacherId, SubjectId = subjectId };
+        await _supabaseService.UpdateTeacherSubjectInterest(model);
+        return RedirectToAction("GetAllTeacherSubjectInterests");
+    }
+
+    public async Task<IActionResult> DeleteTeacherSubjectInterest(int teacherId, string subjectId)
+    {
+        await _supabaseService.DeleteTeacherSubjectInterest(teacherId, subjectId);
+        return RedirectToAction("GetAllTeacherSubjectInterests");
+    }
+    public async Task<IActionResult> GetAllRemainingSubjects()
+    {
+        var list = await _supabaseService.GetRemainingSubjectsList();
+        return View(list);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddRemainingSubject(string subjectId, int classId, int deptId)
+    {
+        var model = new RemainingSubjectsModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
+        await _supabaseService.AddRemainingSubject(model);
+        return RedirectToAction("GetAllRemainingSubjects");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateRemainingSubject(string subjectId, int classId, int deptId)
+    {
+        var model = new RemainingSubjectsModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
+        await _supabaseService.UpdateRemainingSubject(model);
+        return RedirectToAction("GetAllRemainingSubjects");
+    }
+
+    public async Task<IActionResult> DeleteRemainingSubject2(string subjectId, int classId, int deptId)
+    {
+        await _supabaseService.DeleteRemainingSubject2(subjectId, classId, deptId);
+        return RedirectToAction("GetAllRemainingSubjects");
+    }
 
 
 }

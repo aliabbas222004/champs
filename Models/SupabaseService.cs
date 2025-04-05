@@ -390,5 +390,186 @@ public class SupabaseService
             return false;
         }
     }
+    // ✅ TeacherSubjectsSelectedByAdmin CRUD
+    public async Task<List<TeacherSubjectsSelectedByAdminModel>> GetTeacherSubjectsSelectedByAdmin()
+    {
+        try
+        {
+            var response = await _supabase.From<TeacherSubjectsSelectedByAdminModel>().Select("*").Get();
+            return response.Models;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching TeacherSubjectsSelectedByAdmin: {ex.Message}");
+            return new List<TeacherSubjectsSelectedByAdminModel>();
+        }
+    }
+
+    public async Task<bool> AddTeacherSubjectsSelectedByAdmin(TeacherSubjectsSelectedByAdminModel model)
+    {
+        try
+        {
+            await _supabase.From<TeacherSubjectsSelectedByAdminModel>().Insert(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding TeacherSubjectsSelectedByAdmin: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdateTeacherSubjectsSelectedByAdmin(TeacherSubjectsSelectedByAdminModel model)
+    {
+        try
+        {
+            await _supabase.From<TeacherSubjectsSelectedByAdminModel>()
+                .Where(x => x.TeacherId == model.TeacherId && x.SubjectId == model.SubjectId && x.DeptId == model.DeptId && x.ClassId == model.ClassId)
+                .Update(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating TeacherSubjectsSelectedByAdmin: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
+    {
+        try
+        {
+            await _supabase.From<TeacherSubjectsSelectedByAdminModel>()
+                .Where(x => x.TeacherId == teacherId && x.SubjectId == subjectId && x.DeptId == deptId && x.ClassId == classId)
+                .Delete();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting TeacherSubjectsSelectedByAdmin: {ex.Message}");
+            return false;
+        }
+    }
+    // ✅ TeacherSubjectInterest CRUD
+    public async Task<List<TeacherSubjectInterestModel>> GetTeacherSubjectInterests()
+    {
+        try
+        {
+            var response = await _supabase.From<TeacherSubjectInterestModel>().Select("*").Get();
+            return response.Models;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching TeacherSubjectInterest: {ex.Message}");
+            return new List<TeacherSubjectInterestModel>();
+        }
+    }
+
+    public async Task<bool> AddTeacherSubjectInterest(TeacherSubjectInterestModel model)
+    {
+        try
+        {
+            await _supabase.From<TeacherSubjectInterestModel>().Insert(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding TeacherSubjectInterest: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdateTeacherSubjectInterest(TeacherSubjectInterestModel model)
+    {
+        try
+        {
+            await _supabase.From<TeacherSubjectInterestModel>()
+                .Where(x => x.TeacherId == model.TeacherId && x.SubjectId == model.SubjectId)
+                .Update(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating TeacherSubjectInterest: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteTeacherSubjectInterest(int teacherId, string subjectId)
+    {
+        try
+        {
+            await _supabase.From<TeacherSubjectInterestModel>()
+                .Where(x => x.TeacherId == teacherId && x.SubjectId == subjectId)
+                .Delete();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting TeacherSubjectInterest: {ex.Message}");
+            return false;
+        }
+    }
+    // ✅ RemainingSubjects CRUD
+    public async Task<List<RemainingSubjectsModel>> GetRemainingSubjectsList()
+    {
+        try
+        {
+            var response = await _supabase.From<RemainingSubjectsModel>().Select("*").Get();
+            return response.Models;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching RemainingSubjects: {ex.Message}");
+            return new List<RemainingSubjectsModel>();
+        }
+    }
+
+    public async Task<bool> AddRemainingSubject(RemainingSubjectsModel model)
+    {
+        try
+        {
+            await _supabase.From<RemainingSubjectsModel>().Insert(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding RemainingSubjects: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdateRemainingSubject(RemainingSubjectsModel model)
+    {
+        try
+        {
+            await _supabase.From<RemainingSubjectsModel>()
+                .Where(x => x.SubjectId == model.SubjectId && x.ClassId == model.ClassId && x.DeptId == model.DeptId)
+                .Update(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating RemainingSubjects: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> DeleteRemainingSubject2(string subjectId, int classId, int deptId)
+    {
+        try
+        {
+            await _supabase.From<RemainingSubjectsModel>()
+                .Where(x => x.SubjectId == subjectId && x.ClassId == classId && x.DeptId == deptId)
+                .Delete();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting RemainingSubjects: {ex.Message}");
+            return false;
+        }
+    }
+
 
 }

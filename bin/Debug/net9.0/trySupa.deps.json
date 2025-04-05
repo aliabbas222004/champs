@@ -9,6 +9,7 @@
       "trySupa/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "9.0.1",
+          "Microsoft.EntityFrameworkCore.Analyzers": "9.0.1",
           "Newtonsoft.Json": "13.0.3",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "9.0.3",
           "Supabase": "1.1.1",

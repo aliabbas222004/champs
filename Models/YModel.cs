@@ -116,3 +116,50 @@ public class RemainingSubjectsToChooseModel : BaseModel
     [Column("deptid")]
     public int DeptId { get; set; }
 }
+
+[Table("teacher_subjects_selected_by_admin")]
+public class TeacherSubjectsSelectedByAdminModel : BaseModel
+{
+    [PrimaryKey("teacher_id")]
+    [Column("teacher_id")]
+    public int TeacherId { get; set; }
+
+    [PrimaryKey("subject_id")]
+    [Column("subject_id")]
+    public string SubjectId { get; set; }
+
+    [PrimaryKey("dept_id")]
+    [Column("dept_id")]
+    public int DeptId { get; set; }
+
+    [PrimaryKey("class_id")]
+    [Column("class_id")]
+    public int ClassId { get; set; }
+}
+[Table("teacher_subject_interest")]
+public class TeacherSubjectInterestModel : BaseModel
+{
+    [PrimaryKey("teacher_id")]
+    [Column("teacher_id")]
+    public int TeacherId { get; set; }
+
+    [PrimaryKey("subject_id")]
+    [Column("subject_id")]
+    public string SubjectId { get; set; }
+}
+
+[Table("remaining_subjects")]
+public class RemainingSubjectsModel : BaseModel
+{
+    [PrimaryKey("subject_id")]
+    [Column("subject_id")]
+    public string SubjectId { get; set; }
+
+    [PrimaryKey("class_id")]
+    [Column("class_id")]
+    public int ClassId { get; set; }
+
+    [PrimaryKey("dept_id")]
+    [Column("dept_id")]
+    public int DeptId { get; set; }
+}
