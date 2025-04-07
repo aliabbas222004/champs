@@ -70,5 +70,13 @@ namespace trySupa.Controllers
             TempData.Clear();
             return RedirectToAction("Index","Home");
         }
+
+
+        public async Task<IActionResult> TeacherInterest(string tid)
+        {
+            var subjects = await _supabaseService.GetSubjects();
+            ViewBag.tid = tid;
+            return View(subjects);
+        }
     }
 }

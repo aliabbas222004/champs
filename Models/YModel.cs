@@ -31,6 +31,7 @@ public class ClassInfoModel : BaseModel
 public class SubjectModel : BaseModel
 {
     [PrimaryKey("subjectid")]
+    [Column("subjectid")]
     public string SubjectId { get; set; }
 
     [Column("subject_name")]

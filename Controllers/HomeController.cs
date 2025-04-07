@@ -179,16 +179,8 @@ public class HomeController : Controller
 
     }
 
-    
-
-    
-
-    
-    
-
     public IActionResult AdminDashboard()
     {
-
         var token = HttpContext.Session.GetString("AdminToken");
 
         if (token != "Yes")
@@ -205,18 +197,10 @@ public class HomeController : Controller
     }
 
 
-    
-
-    public async Task<IActionResult> TeacherInterest(string tid)
-    {
-        var subjects = await _supabaseService.GetSubjects();
-        ViewBag.tid = tid;
-        return View(subjects);
-    }
-
     [HttpPost]
     public IActionResult SubmitInterstedSubjects(string tid,string selectedSubjects)
     {
+        Console.WriteLine(selectedSubjects);
         var selectedSubjectIds = selectedSubjects.Split(',');
         ViewBag.tid = tid;
         return RedirectToAction("Index");
@@ -350,15 +334,31 @@ public class HomeController : Controller
     }
 
 
+    //[HttpGet]
+    //public JsonResult GetYears(string deptId)
+    //{
+    //    Console.WriteLine(deptId);
+    //    var years = remainingSubjects.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
+    //    var yearNames = classinfo.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.Class_Name }).ToList();
+    //    foreach (var year in yearNames)
+    //    {
+    //        Console.WriteLine($"ClassId: {year.ClassId}, Class_Name: {year.Class_Name}");
+    //    }
+
+    //    return Json(yearNames);
+    //}
+
     [HttpGet]
-    public JsonResult GetYears(string deptId)
+    public async Task<JsonResult> GetYears(string deptId)
     {
         Console.WriteLine(deptId);
-        var years = remainingSubjects.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
-        var yearNames = classinfo.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.Class_Name }).ToList();
+        var remainingSubs = await _supabaseService.GetRemainingSubjects();
+        var classes = await _supabaseService.GetClasses();
+        var years = remainingSubs.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
+        var yearNames = classes.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.ClassName}).ToList();
         foreach (var year in yearNames)
         {
-            Console.WriteLine($"ClassId: {year.ClassId}, Class_Name: {year.Class_Name}");
+            Console.WriteLine($"ClassId: {year.ClassId}, Class_Name: {year.ClassName}");
         }
 
         return Json(yearNames);
@@ -459,6 +459,8 @@ public class HomeController : Controller
             .ToList();
         return Json(yearNames);
     }
+
+
 
 
 
