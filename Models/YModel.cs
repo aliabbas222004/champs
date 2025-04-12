@@ -5,17 +5,19 @@ using Supabase.Postgrest.Models;
 public class DeptModel : BaseModel
 {
     [PrimaryKey("deptid")]
-    public int? DeptId { get; set; }   
-
+    [Column("deptid")]
+    public int DeptId { get; set; }
 
     [Column("dept_name")]
     public string DeptName { get; set; }
 }
+
 [Table("classinfo")]
 public class ClassInfoModel : BaseModel
 {
     [PrimaryKey("classid")]
-    public int ClassId { get; set; }
+    [Column("classid")]
+    public string ClassId { get; set; }
 
     [Column("class_name")]
     public string ClassName { get; set; }
@@ -23,10 +25,10 @@ public class ClassInfoModel : BaseModel
     [Column("no_of_groups")]
     public int NoOfGroups { get; set; }
 
-    [Reference(typeof(DeptModel), ReferenceAttribute.JoinType.Inner)]
     [Column("deptid")]
     public int DeptId { get; set; }
 }
+
 [Table("subject")]
 public class SubjectModel : BaseModel
 {
@@ -43,6 +45,7 @@ public class SubjectModel : BaseModel
     [Column("time_of_lecture")]
     public int TimeOfLecture { get; set; }
 }
+
 [Table("teacher")]
 public class TeacherModel : BaseModel
 {
@@ -59,6 +62,7 @@ public class TeacherModel : BaseModel
     [Column("designation")]
     public string Designation { get; set; }
 }
+
 [Table("subyeardept")]
 public class SubYearDeptModel : BaseModel
 {
@@ -68,19 +72,20 @@ public class SubYearDeptModel : BaseModel
 
     [PrimaryKey("classid")]
     [Column("classid")]
-    public int ClassId { get; set; }
+    public string ClassId { get; set; }
 
     [PrimaryKey("deptid")]
     [Column("deptid")]
     public int DeptId { get; set; }
 }
+
 [Table("timetable")]
 public class TimetableModel : BaseModel
 {
     [PrimaryKey("timetableid")]
+    [Column("timetableid")]
     public int TimetableId { get; set; }
 
-    [Reference(typeof(TeacherModel), ReferenceAttribute.JoinType.Inner)]
     [Column("teacherid")]
     public int TeacherId { get; set; }
 
@@ -90,28 +95,26 @@ public class TimetableModel : BaseModel
     [Column("timeslot")]
     public int TimeSlot { get; set; }
 
-    [Reference(typeof(DeptModel), ReferenceAttribute.JoinType.Inner)]
     [Column("deptid")]
     public int DeptId { get; set; }
 
-    [Reference(typeof(ClassInfoModel), ReferenceAttribute.JoinType.Inner)]
     [Column("classid")]
-    public int ClassId { get; set; }
+    public string ClassId { get; set; }
 
-    [Reference(typeof(SubjectModel), ReferenceAttribute.JoinType.Inner)]
     [Column("subid")]
     public string SubId { get; set; }
 }
+
 [Table("remainingsubjectstochoose")]
 public class RemainingSubjectsToChooseModel : BaseModel
 {
     [PrimaryKey("subjectid")]
     [Column("subjectid")]
-    public string SubjectId { get; set; }  
+    public string SubjectId { get; set; }
 
     [PrimaryKey("classid")]
     [Column("classid")]
-    public int ClassId { get; set; }
+    public string ClassId { get; set; }
 
     [PrimaryKey("deptid")]
     [Column("deptid")]
@@ -135,8 +138,9 @@ public class TeacherSubjectsSelectedByAdminModel : BaseModel
 
     [PrimaryKey("class_id")]
     [Column("class_id")]
-    public int ClassId { get; set; }
+    public string ClassId { get; set; }
 }
+
 [Table("teacher_subject_interest")]
 public class TeacherSubjectInterestModel : BaseModel
 {
@@ -158,7 +162,7 @@ public class RemainingSubjectsModel : BaseModel
 
     [PrimaryKey("class_id")]
     [Column("class_id")]
-    public int ClassId { get; set; }
+    public string ClassId { get; set; }
 
     [PrimaryKey("dept_id")]
     [Column("dept_id")]

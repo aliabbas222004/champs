@@ -1,111 +1,85 @@
-﻿@* @model List<DeptModel>
+﻿@model List<DeptModel>
 
     @{
-    ViewData["Title"] = "Department Management";
+    ViewData["Title"] = "Home Page";
     }
 
-    <h2>Department Management</h2>
+    <h2>Departments</h2>
 
-    <!-- ADD Department -->
-    <form method="post" asp-action="AddDepartment">
-        <input type="text" name="deptName" placeholder="Enter Department Name" required />
-        <button type="submit">Add</button>
+    <!-- Displaying the list of departments -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Department ID</th>
+                <th>Department Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dept in Model)
+        {
+            <tr>
+                <td>@dept.DeptId</td>
+                <td>@dept.DeptName</td>
+                <td>
+                    <!-- Update button (opens update form) -->
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#updateDeptModal" data-deptid="@dept.DeptId" data-deptname="@dept.DeptName">Update</button>
+
+                    <!-- Delete button -->
+                    <form method="post" action="@Url.Action("DeleteDepartment", "Home")" class="d-inline">
+                        <input type="hidden" name="deptId" value="@dept.DeptId" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <!-- Add Department Form -->
+    <h3>Add New Department</h3>
+    <form method="post" action="@Url.Action("AddDepartment", "Home")">
+        <div class="form-group">
+            <label for="DeptName">Department Name</label>
+            <input type="text" id="DeptName" name="DeptName" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Add Department</button>
     </form>
 
-    <hr />
-
-    <!-- List Departments -->
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-        </tr>
-        @foreach (var dept in Model)
-    {
-        <tr>
-            <td>@dept.DeptId</td>
-            <td>
-                <form method="post" asp-action="UpdateDepartment">
-                    <input type="hidden" name="deptId" value="@dept.DeptId" />
-                    <input type="text" name="deptName" value="@dept.DeptName" required />
-                    <button type="submit">Update</button>
-                </form>
-            </td>
-            <td>
-                <a asp-action="DeleteDepartment" asp-route-deptId="@dept.DeptId">Delete</a>
-            </td>
-        </tr>
-    }
-    </table> *@
-
-
-
-
-
-
-
-
-
-    <h2 style="text-align:center">Select Department and class</h2>
-
-    <form asp-action="DisplayTimetable" asp-asp-controller="Home" method="post">
-        <div class="row mb-3 mt-3">
-            <div class="col-md-6 col-sm-4">
-                <div class="form-floating">
-                <select class="form-select" name="Department" id="departmentDropdown">
-                    <option value="" disabled selected>Select Department</option>
-                    @foreach (var dept in ViewBag.Departments)
-                    {
-                        <option value="@dept.DeptId">@dept.DeptName</option>
-                    }
-                </select>
-                    <label>Select Department</label>
+    <!-- Update Department Modal -->
+    <div class="modal fade" id="updateDeptModal" tabindex="-1" aria-labelledby="updateDeptModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateDeptModalLabel">Update Department</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="@Url.Action("UpdateDepartment", "Home")">
+                        <input type="hidden" id="updateDeptId" name="DeptId" />
+                        <div class="form-group">
+                            <label for="updateDeptName">Department Name</label>
+                            <input type="text" id="updateDeptName" name="DeptName" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Department</button>
+                    </form>
                 </div>
             </div>
-
-            <div class="col-md-6 col-sm-4">
-                <div class="form-floating">
-                <select class="form-select" name="Class" id="classDropdown">
-                    <option value="" disabled selected>Select Class</option>
-                </select>
-                <label>Select Class</label>
-                </div>
-            </div>
-
-
         </div>
+    </div>
 
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary px-4">Submit</button>
-        </div>
-    </form>
+    <script>
+        // JavaScript to populate the modal form with department data for updating
+        var updateDeptModal = document.getElementById('updateDeptModal');
+        updateDeptModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var deptId = button.getAttribute('data-deptid');
+            var deptName = button.getAttribute('data-deptname');
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const deptSelect = document.getElementById("departmentDropdown");
-        const yearSelect = document.getElementById("classDropdown");
+            var modalDeptId = updateDeptModal.querySelector('#updateDeptId');
+            var modalDeptName = updateDeptModal.querySelector('#updateDeptName');
 
-        deptSelect.addEventListener("change", function () {
-            const deptId = this.value;
-            yearSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
-
-            fetch(`/Home/GetYears?deptId=${deptId}`)
-                .then(response => response.json())
-                    .then(data => {
-
-                        yearSelect.innerHTML = `<option value="" disabled selected>Select Year</option>`; // Clear previous options
-
-                        data.forEach(year => {
-                            let option = document.createElement("option");
-                            option.value = year.classId;
-                            option.textContent = year.class_Name;
-                            yearSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error("Error fetching years:", error));
-            });
-
+            modalDeptId.value = deptId;
+            modalDeptName.value = deptName;
         });
-
-</script>
+    </script>

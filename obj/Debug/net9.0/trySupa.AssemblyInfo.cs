@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("trySupa")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e16cfcbe7e192b1bd7130b110653b4e7787a2d42")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+db77996d36d26882192b4d523ec3e679fc0aa95f")]
 [assembly: System.Reflection.AssemblyProductAttribute("trySupa")]
 [assembly: System.Reflection.AssemblyTitleAttribute("trySupa")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

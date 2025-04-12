@@ -198,7 +198,7 @@ public class HomeController : Controller
 
 
     [HttpPost]
-    public IActionResult SubmitInterstedSubjects(string tid,string selectedSubjects)
+    public IActionResult SubmitInterstedSubjects(string tid, string selectedSubjects)
     {
         Console.WriteLine(selectedSubjects);
         var selectedSubjectIds = selectedSubjects.Split(',');
@@ -207,39 +207,39 @@ public class HomeController : Controller
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> DisplayTimetable(string Department, string Class)
-    {
-        var timetable = await _supabaseService.GetTimetable();
-        //var timetable = AllTeachertimetable.ToList();
-        var classId = classinfo.Where(c => c.Class_Name == Class).Select(c => c.ClassId).FirstOrDefault();
-        var deptId = dept.Where(d => d.Dept_Name == Department).Select(d => d.DeptId).FirstOrDefault();
-        var filteredTimetable = timetable
-        .Where(t => t.DeptId == deptId && t.ClassId == classId)
-        .OrderBy(t => t.Day)
-        .ThenBy(t => t.TimeSlot)
-        .ToList();
+    //[HttpPost]
+    //public async Task<IActionResult> DisplayTimetable(string Department, string Class)
+    //{
+    //    var timetable = await _supabaseService.GetTimetable();
+    //    //var timetable = AllTeachertimetable.ToList();
+    //    var classId = classinfo.Where(c => c.Class_Name == Class).Select(c => c.ClassId).FirstOrDefault();
+    //    var deptId = dept.Where(d => d.Dept_Name == Department).Select(d => d.DeptId).FirstOrDefault();
+    //    var filteredTimetable = timetable
+    //    .Where(t => t.DeptId == deptId && t.ClassId == classId)
+    //    .OrderBy(t => t.Day)
+    //    .ThenBy(t => t.TimeSlot)
+    //    .ToList();
 
 
-        var structuredTimetable = new Dictionary<string, string>();
+    //    var structuredTimetable = new Dictionary<string, string>();
 
-        foreach (var entry in filteredTimetable)
-        {
-            string key = $"{entry.TimeSlot}_{entry.Day}";
-            string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-            string teacherName = teacher.FirstOrDefault(c => c.TeacherId == entry.TeacherId)?.Teacher_Name ?? "Unknown";
-            structuredTimetable[key] = $"{subjectName}<br>{teacherName}";
-        }
+    //    foreach (var entry in filteredTimetable)
+    //    {
+    //        string key = $"{entry.TimeSlot}_{entry.Day}";
+    //        string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
+    //        string teacherName = teacher.FirstOrDefault(c => c.TeacherId == entry.TeacherId)?.Teacher_Name ?? "Unknown";
+    //        structuredTimetable[key] = $"{subjectName}<br>{teacherName}";
+    //    }
 
-        ViewBag.TimeSlots = timeSlots;
-        ViewBag.Timetable = structuredTimetable;
+    //    ViewBag.TimeSlots = timeSlots;
+    //    ViewBag.Timetable = structuredTimetable;
 
 
 
-        return View();
-    }
+    //    return View();
+    //}
 
-    
+
 
 
 
@@ -355,7 +355,7 @@ public class HomeController : Controller
         var remainingSubs = await _supabaseService.GetRemainingSubjects();
         var classes = await _supabaseService.GetClasses();
         var years = remainingSubs.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
-        var yearNames = classes.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.ClassName}).ToList();
+        var yearNames = classes.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.ClassName }).ToList();
         foreach (var year in yearNames)
         {
             Console.WriteLine($"ClassId: {year.ClassId}, Class_Name: {year.ClassName}");
@@ -416,7 +416,8 @@ public class HomeController : Controller
 
         var remainingSubjectsToSelect = remainingSubjects.Where(s => s.DeptId == int.Parse(Dept) && s.ClassId == int.Parse(Year)).Select(s => s.SubjectId);
         TempData["Success"] = false;
-        if (remainingSubjectsToSelect.Count() == 0) {
+        if (remainingSubjectsToSelect.Count() == 0)
+        {
             TempData["AlertMessage"] = "Timetable generated successfully!";
             TempData["Success"] = true;
 
@@ -542,278 +543,139 @@ public class HomeController : Controller
         };
     }
 
-    // ✅ Read All Departments
+    // GET: Home/Index
     public async Task<IActionResult> Index()
     {
+        // Get the list of departments from the database
         var departments = await _supabaseService.GetDepartments();
-        ViewBag.Departments = departments;
-        return View();
+
+        // Pass the list of departments to the view
+        return View(departments);
     }
 
-    // ✅ Add New Department
+    // POST: Home/AddDepartment
     [HttpPost]
-    public async Task<IActionResult> AddDepartment(string deptName)
+    public async Task<IActionResult> AddDepartment(DeptModel department)
     {
-        var newDept = new DeptModel { DeptName = deptName };
-        await _supabaseService.AddDepartment(newDept);
-        return RedirectToAction("Index");
-    }
-
-    // ✅ Update Department
-    [HttpPost]
-    public async Task<IActionResult> UpdateDepartment(int deptId, string deptName)
-    {
-        var updatedDept = new DeptModel { DeptId = deptId, DeptName = deptName  };
-        await _supabaseService.UpdateDepartment(updatedDept);
-        return RedirectToAction("Index");
-    }
-
-    // ✅ Delete Department
-    public async Task<IActionResult> DeleteDepartment(int deptId)
-    {
-        await _supabaseService.DeleteDepartment(deptId);
-        return RedirectToAction("Index");
-    }
-
-
-    // ✅ ClassInfo CRUD
-    public async Task<IActionResult> GetAllClasses()
-    {
-        var classes = await _supabaseService.GetClasses();
-        return View(classes);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddClass(string className, int noOfGroups, int deptId)
-    {
-        var newClass = new ClassInfoModel { ClassName = className, NoOfGroups = noOfGroups, DeptId = deptId };
-        await _supabaseService.AddClass(newClass);
-        return RedirectToAction("GetAllClasses");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateClass(int classId, string className, int noOfGroups, int deptId)
-    {
-        var updatedClass = new ClassInfoModel { ClassId = classId, ClassName = className, NoOfGroups = noOfGroups, DeptId = deptId };
-        await _supabaseService.UpdateClass(updatedClass);
-        return RedirectToAction("GetAllClasses");
-    }
-
-    public async Task<IActionResult> DeleteClass(int classId)
-    {
-        await _supabaseService.DeleteClass(classId);
-        return RedirectToAction("GetAllClasses");
-    }
-
-    // ✅ Subject CRUD
-    public async Task<IActionResult> GetAllSubjects()
-    {
-        var subjects = await _supabaseService.GetSubjects();
-        return View(subjects);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddSubject(string subjectName, int noOfHoursPerWeek, int timeOfLecture)
-    {
-        var newSubject = new SubjectModel { SubjectName = subjectName, NoOfHoursPerWeek = noOfHoursPerWeek, TimeOfLecture = timeOfLecture };
-        await _supabaseService.AddSubject(newSubject);
-        return RedirectToAction("GetAllSubjects");
-    }
-
-    [HttpPost]
-    //public async Task<IActionResult> UpdateSubject(int subjectId, string subjectName, int noOfHoursPerWeek, int timeOfLecture)
-    //{
-    //    var updatedSubject = new SubjectModel { SubjectId = subjectId, SubjectName = subjectName, NoOfHoursPerWeek = noOfHoursPerWeek, TimeOfLecture = timeOfLecture };
-    //    await _supabaseService.UpdateSubject(updatedSubject);
-    //    return RedirectToAction("GetAllSubjects");
-    //}
-
-    //public async Task<IActionResult> DeleteSubject(int subjectId)
-    //{
-    //    await _supabaseService.DeleteSubject(subjectId);
-    //    return RedirectToAction("GetAllSubjects");
-    //}
-
-    // ✅ Teacher CRUD
-    public async Task<IActionResult> GetAllTeachers()
-    {
-        var teachers = await _supabaseService.GetTeachers();
-        return View(teachers);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddTeacher(string teacherName, string password, string designation)
-    {
-        var newTeacher = new TeacherModel { TeacherName = teacherName, Password = password, Designation = designation };
-        await _supabaseService.AddTeacher(newTeacher);
-        return RedirectToAction("GetAllTeachers");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateTeacher(int teacherId, string teacherName, string password, string designation)
-    {
-        var updatedTeacher = new TeacherModel { TeacherId = teacherId, TeacherName = teacherName, Password = password, Designation = designation };
-        await _supabaseService.UpdateTeacher(updatedTeacher);
-        return RedirectToAction("GetAllTeachers");
-    }
-
-    public async Task<IActionResult> DeleteTeacher(int teacherId)
-    {
-        await _supabaseService.DeleteTeacher(teacherId);
-        return RedirectToAction("GetAllTeachers");
-    }
-
-    // ✅ Timetable CRUD
-    public async Task<IActionResult> GetAllTimetables()
-    {
-        var timetables = await _supabaseService.GetTimetable();
-        return View(timetables);
-    }
-
-    //[HttpPost]
-    //public async Task<IActionResult> AddTimetable(int teacherId, string day, int timeSlot, int deptId, int classId, int subId)
-    //{
-    //    var newTimetable = new TimetableModel { TeacherId = teacherId, Day = day, TimeSlot = timeSlot, DeptId = deptId, ClassId = classId, SubId = subId };
-    //    await _supabaseService.AddTimetable(newTimetable);
-    //    return RedirectToAction("GetAllTimetables");
-    //}
-
-    //[HttpPost]
-    //public async Task<IActionResult> UpdateTimetable(int timetableId, int teacherId, string day, int timeSlot, int deptId, int classId, int subId)
-    //{
-    //    var updatedTimetable = new TimetableModel { TimetableId = timetableId, TeacherId = teacherId, Day = day, TimeSlot = timeSlot, DeptId = deptId, ClassId = classId, SubId = subId };
-    //    await _supabaseService.UpdateTimetable(updatedTimetable);
-    //    return RedirectToAction("GetAllTimetables");
-    //}
-
-    public async Task<IActionResult> DeleteTimetable(int timetableId)
-    {
-        await _supabaseService.DeleteTimetable(timetableId);
-        return RedirectToAction("GetAllTimetables");
-    }
-
-        // ✅ SubYearDept CRUD
-        public async Task<IActionResult> GetAllSubYearDepts()
+        if (ModelState.IsValid)
         {
-            var subYearDepts = await _supabaseService.GetSubYearDept();
-            return View(subYearDepts);
+            bool success = await _supabaseService.AddDepartment(department);
+            if (success)
+            {
+
+                var classModel = new ClassInfoModel
+                {
+                    DeptId = 3,
+                    ClassId = "Class_"  , // Generate class ID
+                    ClassName = "Class for "  ,
+                    NoOfGroups = 3
+                };
+                bool classAdded = await _supabaseService.AddClass(classModel);
+                if (classAdded) Console.WriteLine($"Class '{classModel.ClassName}' added successfully.");
+                else Console.WriteLine("Failed to add class.");
+
+
+                // Redirect back to the index view after successful addition
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                // Return an error message if adding the department failed
+                ModelState.AddModelError(string.Empty, "An error occurred while adding the department.");
+            }
         }
 
+        return View("Index");
+    }
+
+    // POST: Home/UpdateDepartment
+    [HttpPost]
+    public async Task<IActionResult> UpdateDepartment(DeptModel department)
+    {
+        if (ModelState.IsValid)
+        {
+            bool success = await _supabaseService.UpdateDepartment(department);
+            if (success)
+            {
+                // Redirect back to the index view after successful update
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                // Return an error message if updating the department failed
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the department.");
+            }
+        }
+
+        return View("Index");
+    }
+
+    // POST: Home/DeleteDepartment
+    [HttpPost]
+    public async Task<IActionResult> DeleteDepartment(int deptId)
+    {
+        bool success = await _supabaseService.DeleteDepartment(deptId);
+        if (success)
+        {
+            // Redirect back to the index view after successful deletion
+            return RedirectToAction("Index");
+        }
+        else
+        {
+            // Return an error message if deleting the department failed
+            ModelState.AddModelError(string.Empty, "An error occurred while deleting the department.");
+        }
+
+        return View("Index");
+    }
+
+    // Add Class
     //[HttpPost]
-    //public async Task<IActionResult> AddSubYearDept(int subjectId, int classId, int deptId)
+    //public async Task<IActionResult> AddClass(ClassInfoModel model)
     //{
-    //    var newSubYearDept = new SubYearDeptModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
-    //    await _supabaseService.AddSubYearDept(newSubYearDept);
-    //    return RedirectToAction("GetAllSubYearDepts");
+    //    if (ModelState.IsValid)
+    //    {
+    //        var result = await _supabaseService.AddClass(model);
+    //        return result ? RedirectToAction("Index") : View("Error");
+    //    }
+    //    return View("Error");
     //}
 
+    //// Edit Class (GET)
+    //[HttpGet]
+    //public async Task<IActionResult> Edit(string id)
+    //{
+    //    var classes = await _supabaseService.GetClasses();
+    //    var classToEdit = classes?.FirstOrDefault(c => c.ClassId == id);
+    //    return classToEdit != null ? View(classToEdit) : View("Error");
+    //}
+
+    //// Update Class (POST)
     //[HttpPost]
-    //public async Task<IActionResult> UpdateSubYearDept(int subjectId, int classId, int deptId)
+    //public async Task<IActionResult> UpdateClass(ClassInfoModel model)
     //{
-    //    var updatedSubYearDept = new SubYearDeptModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
-    //    await _supabaseService.UpdateSubYearDept(updatedSubYearDept);
-    //    return RedirectToAction("GetAllSubYearDepts");
+    //    if (ModelState.IsValid)
+    //    {
+    //        var result = await _supabaseService.UpdateClass(model);
+    //        return result ? RedirectToAction("Index") : View("Error");
+    //    }
+    //    return View("Error");
     //}
 
-    //public async Task<IActionResult> DeleteSubYearDept(int subjectId, int classId, int deptId)
+    //// Delete Class
+    //[HttpPost]
+    //public async Task<IActionResult> DeleteClass(string classId)
     //{
-    //    await _supabaseService.DeleteSubYearDept(subjectId, classId, deptId);
-    //    return RedirectToAction("GetAllSubYearDepts");
+    //    if (!string.IsNullOrEmpty(classId))
+    //    {
+    //        var result = await _supabaseService.DeleteClass(classId);
+    //        return result ? RedirectToAction("Index") : View("Error");
+    //    }
+    //    return View("Error");
     //}
-    public async Task<IActionResult> GetAllTeacherSubjectsSelectedByAdmin()
-    {
-        var list = await _supabaseService.GetTeacherSubjectsSelectedByAdmin();
-        return View(list);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
-    {
-        var model = new TeacherSubjectsSelectedByAdminModel { TeacherId = teacherId, SubjectId = subjectId, DeptId = deptId, ClassId = classId };
-        await _supabaseService.AddTeacherSubjectsSelectedByAdmin(model);
-        return RedirectToAction("GetAllTeacherSubjectsSelectedByAdmin");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
-    {
-        var model = new TeacherSubjectsSelectedByAdminModel { TeacherId = teacherId, SubjectId = subjectId, DeptId = deptId, ClassId = classId };
-        await _supabaseService.UpdateTeacherSubjectsSelectedByAdmin(model);
-        return RedirectToAction("GetAllTeacherSubjectsSelectedByAdmin");
-    }
-
-    public async Task<IActionResult> DeleteTeacherSubjectsSelectedByAdmin(int teacherId, string subjectId, int deptId, int classId)
-    {
-        await _supabaseService.DeleteTeacherSubjectsSelectedByAdmin(teacherId, subjectId, deptId, classId);
-        return RedirectToAction("GetAllTeacherSubjectsSelectedByAdmin");
-    }
-    public async Task<IActionResult> GetAllTeacherSubjectInterests()
-    {
-        var list = await _supabaseService.GetTeacherSubjectInterests();
-        return View(list);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddTeacherSubjectInterest(int teacherId, string subjectId)
-    {
-        var model = new TeacherSubjectInterestModel { TeacherId = teacherId, SubjectId = subjectId };
-        await _supabaseService.AddTeacherSubjectInterest(model);
-        return RedirectToAction("GetAllTeacherSubjectInterests");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateTeacherSubjectInterest(int teacherId, string subjectId)
-    {
-        var model = new TeacherSubjectInterestModel { TeacherId = teacherId, SubjectId = subjectId };
-        await _supabaseService.UpdateTeacherSubjectInterest(model);
-        return RedirectToAction("GetAllTeacherSubjectInterests");
-    }
-
-    public async Task<IActionResult> DeleteTeacherSubjectInterest(int teacherId, string subjectId)
-    {
-        await _supabaseService.DeleteTeacherSubjectInterest(teacherId, subjectId);
-        return RedirectToAction("GetAllTeacherSubjectInterests");
-    }
-    public async Task<IActionResult> GetAllRemainingSubjects()
-    {
-        var list = await _supabaseService.GetRemainingSubjectsList();
-        return View(list);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AddRemainingSubject(string subjectId, int classId, int deptId)
-    {
-        var model = new RemainingSubjectsModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
-        await _supabaseService.AddRemainingSubject(model);
-        return RedirectToAction("GetAllRemainingSubjects");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateRemainingSubject(string subjectId, int classId, int deptId)
-    {
-        var model = new RemainingSubjectsModel { SubjectId = subjectId, ClassId = classId, DeptId = deptId };
-        await _supabaseService.UpdateRemainingSubject(model);
-        return RedirectToAction("GetAllRemainingSubjects");
-    }
-
-    public async Task<IActionResult> DeleteRemainingSubject2(string subjectId, int classId, int deptId)
-    {
-        await _supabaseService.DeleteRemainingSubject2(subjectId, classId, deptId);
-        return RedirectToAction("GetAllRemainingSubjects");
-    }
 
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
