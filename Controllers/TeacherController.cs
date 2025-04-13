@@ -18,7 +18,7 @@ namespace trySupa.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(string TeacherId, string Teacher_Name, string Password,string Admin_Password, string Designation)
+        public async Task<IActionResult> Register(string TeacherId, string Teacher_Name, string Password, string Admin_Password, string Designation)
         {
             if (Admin_Password != "1234567890")
             {
@@ -28,15 +28,15 @@ namespace trySupa.Controllers
             TempData["TeacherToken"] = "Yes";
             TempData["tid"] = TeacherId;
             int teacherid = int.Parse(TeacherId);
-            Console.WriteLine(teacherid+ Teacher_Name+Password + Designation);
+            Console.WriteLine(teacherid + Teacher_Name + Password + Designation);
             var newTeacher = new TeacherModel { TeacherId = teacherid, TeacherName = Teacher_Name, Password = Password, Designation = Designation };
-            var t=await _supabaseService.AddTeacher(newTeacher);
+            var t = await _supabaseService.AddTeacher(newTeacher);
             if (t == false)
             {
                 return RedirectToAction("Register");
             }
             HttpContext.Session.SetString("TeacherToken", "Yes");
-            return RedirectToAction("TeacherDashboard","Home", new { tid = int.Parse(TeacherId) });
+            return RedirectToAction("TeacherDashboard", new { tid = int.Parse(TeacherId) });
         }
 
         public IActionResult Login()
@@ -60,15 +60,78 @@ namespace trySupa.Controllers
                 TempData["tid"] = TeacherID;
                 var d = await _supabaseService.GetDepartments();
                 TempData["Departments"] = JsonConvert.SerializeObject(d.Select(d => new { d.DeptId, d.DeptName }).ToList());
-                return RedirectToAction("TeacherDashboard","Home", new { tid = t.TeacherId });
+                return RedirectToAction("TeacherDashboard", new { tid = t.TeacherId });
             }
+        }
+
+        Dictionary<int, string> timeSlots = new Dictionary<int, string>
+            {
+                {1, "11:00am - 12:00pm"},
+                {2, "12:00pm - 1:00pm"},
+                {3, "1:00pm - 2:00pm"},
+                {4, "2:30pm - 3:30pm"},
+                {5, "3:30pm - 4:30pm"},
+                {6, "4:30pm - 5:30pm"}
+            };
+
+        public async Task<IActionResult> TeacherDashboard(int tid)
+        {
+            var token = HttpContext.Session.GetString("TeacherToken");
+            if (token != "Yes")
+            {
+                return RedirectToAction("Index");
+            }
+            var teachers = await _supabaseService.GetTeachers();
+            var subjects = await _supabaseService.GetSubjects();
+            var depts = await _supabaseService.GetDepartments();
+            var classes = await _supabaseService.GetClasses();
+            var teacherSubjectByAdmin = await _supabaseService.GetTeacherSubjectsByAdmin();
+            var allTimetable = await _supabaseService.GetTimetable();
+            var result = (from ts in teacherSubjectByAdmin
+                          join t in teachers on ts.TeacherId equals t.TeacherId
+                          join s in subjects on ts.SubjectId equals s.SubjectId
+                          join d in depts on ts.DeptId equals d.DeptId
+                          join c in classes on ts.ClassId equals c.ClassId
+                          where ts.TeacherId == tid
+                          select new
+                          {
+                              TeacherName = t.TeacherName,
+                              SubjectName = s.SubjectName,
+                              DepartmentName = d.DeptName,
+                              ClassName = c.ClassName
+                          }).ToList();
+            var timetable = allTimetable.Where(t => t.TeacherId == tid).ToList();
+
+            var structuredTimetable = new Dictionary<string, string>();
+
+            foreach (var entry in timetable)
+            {
+                string key = $"{entry.TimeSlot}_{entry.Day}";
+                string subjectName = subjects.FirstOrDefault(s => s.SubjectId == entry.SubId)?.SubjectName ?? "Unknown";
+                string className = classes.FirstOrDefault(c => c.ClassId == (entry.ClassId).ToString())?.ClassName ?? "Unknown";
+                string deptName = depts.FirstOrDefault(d => d.DeptId == entry.DeptId)?.DeptName ?? "Unknown";
+                structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
+            }
+
+            var subjectDict = result.Distinct().ToDictionary(
+        item => $"{item.TeacherName}_{item.SubjectName}_{item.DepartmentName}_{item.ClassName}",
+        item => $"{item.SubjectName} ({item.DepartmentName}, {item.ClassName})"
+    );
+
+            ViewBag.subjectsToSelect = subjectDict;
+            ViewBag.TimeSlots = timeSlots;
+            ViewBag.Timetable = structuredTimetable;
+            ViewBag.tid = tid;
+
+            return View();
+
         }
 
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             TempData.Clear();
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
 
 
@@ -77,6 +140,25 @@ namespace trySupa.Controllers
             var subjects = await _supabaseService.GetSubjects();
             ViewBag.tid = tid;
             return View(subjects);
+        }
+
+
+        [HttpPost]
+        public IActionResult SubmitInterstedSubjects(string tid, string selectedSubjects)
+        {
+            var selectedSubjectIds = selectedSubjects.Split(',');
+            foreach (var subjectId in selectedSubjectIds)
+            {
+                var teacherSubjectInterest = new TeacherSubjectInterestModel
+                {
+                    TeacherId = Convert.ToInt32(tid),
+                    SubjectId = subjectId
+                };
+
+                _supabaseService.AddTeacherSubjectInterest(teacherSubjectInterest);
+            }
+            ViewBag.tid = tid;
+            return RedirectToAction("TeacherDashboard", "Home", new { tid = tid });
         }
     }
 }

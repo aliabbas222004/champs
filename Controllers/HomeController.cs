@@ -132,52 +132,60 @@ public class HomeController : Controller
         {6, "4:30pm - 5:30pm"}
     };
 
-    public IActionResult TeacherDashboard(int tid)
-    {
-        var token = HttpContext.Session.GetString("TeacherToken");
-        if (token != "Yes")
-        {
-            return RedirectToAction("Index");
-        }
-        var result = (from ts in teacherSubjectsSelectedByAdmin
-                      join t in teacher on ts.TeacherId equals t.TeacherId
-                      join s in s1 on ts.SubjectId equals s.SubjectId
-                      join d in dept on ts.DeptId equals d.DeptId
-                      join c in classinfo on ts.ClassId equals c.ClassId
-                      where ts.TeacherId == tid
-                      select new
-                      {
-                          TeacherName = t.Teacher_Name,
-                          SubjectName = s.Subject_Name,
-                          DepartmentName = d.Dept_Name,
-                          ClassName = c.Class_Name
-                      }).ToList();
-        var timetable = AllTeachertimetable.Where(t => t.TeacherId == tid).ToList();
+//    public async Task<IActionResult> TeacherDashboard(int tid)
+//    {
+//        var token = HttpContext.Session.GetString("TeacherToken");
+//        if (token != "Yes")
+//        {
+//            return RedirectToAction("Index");
+//        }
+//        var teachers=await _supabaseService.GetTeachers();
+//        var subjects=await _supabaseService.GetSubjects();
+//        var depts=await _supabaseService.GetDepartments();
+//        var classes=await _supabaseService.GetClasses();
+//        var teacherSubjectByAdmin = await _supabaseService.GetTeacherSubjectsByAdmin();
+//        var result = (from ts in teacherSubjectsSelectedByAdmin
+//                      join t in teacher on ts.TeacherId equals t.TeacherId
+//                      join s in s1 on ts.SubjectId equals s.SubjectId
+//                      join d in dept on ts.DeptId equals d.DeptId
+//                      join c in classinfo on ts.ClassId equals c.ClassId
+//                      where ts.TeacherId == tid
+//                      select new
+//                      {
+//                          TeacherName = t.Teacher_Name,
+//                          SubjectName = s.Subject_Name,
+//                          DepartmentName = d.Dept_Name,
+//                          ClassName = c.Class_Name
+//                      }).ToList();
+//        var timetable = AllTeachertimetable.Where(t => t.TeacherId == tid).ToList();
 
-        var structuredTimetable = new Dictionary<string, string>();
+//        var structuredTimetable = new Dictionary<string, string>();
 
-        foreach (var entry in timetable)
-        {
-            string key = $"{entry.Timeslot}_{entry.Day}";
-            string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-            string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
-            string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
-            structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
-        }
+//        foreach (var entry in timetable)
+//        {
+//            string key = $"{entry.Timeslot}_{entry.Day}";
+//            string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
+//            string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
+//            string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
+//            structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
+//        }
 
-        var subjectDict = result.ToDictionary(
-    item => $"{item.TeacherName}_{item.SubjectName}_{item.DepartmentName}_{item.ClassName}",
-    item => $"{item.SubjectName} ({item.DepartmentName}, {item.ClassName})"
-);
+//        var subjectDict = result.ToDictionary(
+//    item => $"{item.TeacherName}_{item.SubjectName}_{item.DepartmentName}_{item.ClassName}",
+//    item => $"{item.SubjectName} ({item.DepartmentName}, {item.ClassName})"
+//);
 
-        ViewBag.subjectsToSelect = subjectDict;
-        ViewBag.TimeSlots = timeSlots;
-        ViewBag.Timetable = structuredTimetable;
-        ViewBag.tid = tid;
+//        ViewBag.subjectsToSelect = subjectDict;
+//        ViewBag.TimeSlots = timeSlots;
+//        ViewBag.Timetable = structuredTimetable;
+//        ViewBag.tid = tid;
 
-        return View();
+//        return View();
 
-    }
+//    }
+
+
+    
 
     public IActionResult AdminDashboard()
     {
@@ -197,14 +205,7 @@ public class HomeController : Controller
     }
 
 
-    [HttpPost]
-    public IActionResult SubmitInterstedSubjects(string tid, string selectedSubjects)
-    {
-        Console.WriteLine(selectedSubjects);
-        var selectedSubjectIds = selectedSubjects.Split(',');
-        ViewBag.tid = tid;
-        return RedirectToAction("Index");
-    }
+    
 
 
     //[HttpPost]
@@ -333,21 +334,6 @@ public class HomeController : Controller
         public int TimeSlot { get; set; }
     }
 
-
-    //[HttpGet]
-    //public JsonResult GetYears(string deptId)
-    //{
-    //    Console.WriteLine(deptId);
-    //    var years = remainingSubjects.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
-    //    var yearNames = classinfo.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.Class_Name }).ToList();
-    //    foreach (var year in yearNames)
-    //    {
-    //        Console.WriteLine($"ClassId: {year.ClassId}, Class_Name: {year.Class_Name}");
-    //    }
-
-    //    return Json(yearNames);
-    //}
-
     [HttpGet]
     public async Task<JsonResult> GetYears(string deptId)
     {
@@ -381,34 +367,8 @@ public class HomeController : Controller
         public string Designation { get; set; }
     }
 
-    [HttpPost]
-    public IActionResult AssignSubjects(string Dept1, string Year1)
-    {
-        var subj = subYearDepts.Where(s => s.DeptId == int.Parse(Dept1) && s.ClassId == int.Parse(Year1)).Select(s => s.SubjectId);
-        var subinfo = s1.Where(s => subj.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name });
-        var subjectTeachers = teachSubj
-    .Where(ts => subinfo.Select(s => s.SubjectId).Contains(ts.SubjectId))
-    .GroupBy(ts => ts.SubjectId)
-    .ToDictionary(
-        group => new { SubjectId = group.Key, SubjectName = subinfo.FirstOrDefault(s => s.SubjectId == group.Key)?.Subject_Name ?? "Unknown" },
-        group => group.Select(ts =>
-        {
-            var teacherData = teacher.FirstOrDefault(t => t.TeacherId == ts.TeacherId);
-            return new TeacherInfo
-            {
-                TeacherId = teacherData?.TeacherId ?? 0,
-                TeacherName = teacherData?.Teacher_Name ?? "Unknown",
-                WorkingHours = AllTeachertimetable.Count(t => t.TeacherId == teacherData.TeacherId),
-                Designation = teacherData?.Designation ?? "N/A"
-            };
-        }).ToList()
-    );
 
 
-        Console.WriteLine(subjectTeachers.Count);
-        ViewBag.SubjectTeachers = subjectTeachers;
-        return View();
-    }
 
     [HttpPost]
     public IActionResult GenerateTimeTable(string Dept, string Year)
@@ -436,18 +396,7 @@ public class HomeController : Controller
     }
 
 
-    [HttpPost]
-    public IActionResult AssignTeachers(Dictionary<int, int> selectedTeachers)
-    {
-        foreach (var assignment in selectedTeachers)
-        {
-            int subjectId = assignment.Key;
-            int teacherId = assignment.Value;
-
-            Console.WriteLine($"Assigned Teacher {teacherId} to Subject {subjectId}");
-        }
-        return RedirectToAction("AdminDashboard");
-    }
+    
 
     [HttpGet]
     public JsonResult GetYearsForRemainingDept(string deptId)

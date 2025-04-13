@@ -232,33 +232,9 @@ public class SupabaseService
     public async Task<List<TimetableModel>> GetTimetable() =>
         (await _supabase.From<TimetableModel>().Select("*").Get()).Models;
 
-    public async Task<bool> UpdateTimetable(TimetableModel model)
-    {
-        try
-        {
-            await _supabase.From<TimetableModel>().Where(x => x.TimetableId == model.TimetableId).Update(model);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error updating timetable: {ex.Message}");
-            return false;
-        }
-    }
+    
 
-    public async Task<bool> DeleteTimetable(int timetableId)
-    {
-        try
-        {
-            await _supabase.From<TimetableModel>().Where(x => x.TimetableId == timetableId).Delete();
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting timetable: {ex.Message}");
-            return false;
-        }
-    }
+    
 
     // ✅ CRUD Operations for SubYearDept Table
     public async Task<bool> AddSubYearDept(SubYearDeptModel model)

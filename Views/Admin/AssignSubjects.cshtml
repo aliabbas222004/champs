@@ -1,10 +1,9 @@
-﻿<form method="post" asp-controller="Home" asp-action="AssignTeachers">
+﻿<form method="post" asp-controller="Admin" asp-action="AssignTeachers">
     @if (ViewBag.SubjectTeachers != null)
     {
         @foreach (var subject in ViewBag.SubjectTeachers)
         {
             var subjectInfo = subject.Key;
-            <!-- Extract the composite key -->
             <h3 class="text-center">For subject: @subjectInfo.SubjectName, the available teachers are:</h3>
 
             <table class="table table-bordered table-striped">
@@ -29,6 +28,9 @@
                     </tr>
                 }
             </table>
+
+            <input type="hidden" value="@ViewBag.Dept1" name="Dept" />
+            <input type="hidden" value="@ViewBag.Year1" name="Year" />
         }
 
     }

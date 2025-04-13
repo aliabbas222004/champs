@@ -82,9 +82,7 @@ public class SubYearDeptModel : BaseModel
 [Table("timetable")]
 public class TimetableModel : BaseModel
 {
-    [PrimaryKey("timetableid")]
-    [Column("timetableid")]
-    public int TimetableId { get; set; }
+    
 
     [Column("teacherid")]
     public int TeacherId { get; set; }

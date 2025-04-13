@@ -19,7 +19,7 @@
     <h4 class="mt-3">Selected Subjects:</h4>
     <ul id="selectedSubjects" class="list-group"></ul>
 
-    <form id="subjectForm" method="post" asp-controller="Home" asp-action="SubmitInterstedSubjects" asp-route-tid="@ViewBag.tid" class="mt-3">
+    <form id="subjectForm" method="post" asp-controller="Teacher" asp-action="SubmitInterstedSubjects" asp-route-tid="@ViewBag.tid" class="mt-3">
         <input type="hidden" id="selectedSubjectIds" name="selectedSubjects">
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
