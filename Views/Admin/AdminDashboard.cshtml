@@ -24,7 +24,7 @@
 						<option value="" disabled selected>Select Department</option>
 						@foreach (var dept in ViewBag.Departments)
 						{
-							<option value="@dept.DeptId">@dept.Dept_Name</option>
+							<option value="@dept.DeptId">@dept.DeptName</option>
 						}
 					</select>
 					<label>Select Department</label>
@@ -59,13 +59,13 @@
 			fetch(`/Home/GetYearsForRemainingDept?deptId=${deptId}`)
 				.then(response => response.json())
 					.then(data => {
-
+						console.log(data);
 						yearSelect.innerHTML = `<option value="" disabled selected>Select Year</option>`;
 
 						data.forEach(year => {
 							let option = document.createElement("option");
 							option.value = year.classId;
-							option.textContent = year.class_Name;
+							option.textContent = year.className;
 							yearSelect.appendChild(option);
 				});
 			})
@@ -100,7 +100,7 @@
 						<option value="" disabled selected>Select Department</option>
 						@foreach (var dept in ViewBag.Departments)
 						{
-							<option value="@dept.DeptId">@dept.Dept_Name</option>
+							<option value="@dept.DeptId">@dept.DeptName</option>
 						}
 					</select>
 					<label>Select Department</label>

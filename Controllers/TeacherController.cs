@@ -158,7 +158,34 @@ namespace trySupa.Controllers
                 _supabaseService.AddTeacherSubjectInterest(teacherSubjectInterest);
             }
             ViewBag.tid = tid;
-            return RedirectToAction("TeacherDashboard", "Home", new { tid = tid });
+            return RedirectToAction("TeacherDashboard", new { tid = tid });
+        }
+
+
+        public async Task<IActionResult> SelectSubjectToTeach(string teacher_id, string Dept, string Year, string Subject)
+        {
+            var timetables = await _supabaseService.GetTimetable();
+            var subjects = await _supabaseService.GetSubjects();
+            var timetable = timetables.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
+            var no_of_hours = subjects.Where(s => s.SubjectName == (Subject)).Select(s => s.NoOfHoursPerWeek).FirstOrDefault();
+
+            var structuredTimetable = new Dictionary<string, string>();
+
+            foreach (var entry in timetable)
+            {
+                string key = $"{entry.TimeSlot}_{entry.Day}";
+                structuredTimetable[key] = $"{Subject}<br>{Year}<br>{Dept}";
+            }
+
+            ViewBag.TimeSlots = timeSlots;
+            ViewBag.Timetable = structuredTimetable;
+            ViewBag.Subject = Subject;
+            ViewBag.Dept = Dept;
+            ViewBag.Year = Year;
+            ViewBag.No_Of_Hours_Per_Week = no_of_hours;
+            ViewBag.tid = teacher_id;
+
+            return View();
         }
     }
 }

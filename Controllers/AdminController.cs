@@ -25,7 +25,7 @@ namespace trySupa.Controllers
                 return View("LoginAsAdmin");
             }
             HttpContext.Session.SetString("AdminToken", "Yes");
-            return RedirectToAction("AdminDashboard","Home");
+            return RedirectToAction("AdminDashboard");
 
         }
 
@@ -34,6 +34,26 @@ namespace trySupa.Controllers
             HttpContext.Session.Clear();
             TempData.Clear();
             return RedirectToAction("Index","Home");
+        }
+
+        public async Task<IActionResult> AdminDashboard()
+        {
+            var token = HttpContext.Session.GetString("AdminToken");
+
+            if (token != "Yes")
+            {
+                return RedirectToAction("Index");
+            }
+            var timetables = await _supabaseService.GetTimetable();
+            var classes = await _supabaseService.GetClasses();
+            var allDepts = await _supabaseService.GetDepartments();
+            var years = timetables.Select(y => y.ClassId).Distinct().ToList();
+            var yearNames = classes.Where(c => !years.Contains(c.ClassId)).Select(c => c.DeptId).Distinct().ToList();
+            var depts = allDepts.Where(d => yearNames.Contains(d.DeptId)).Select(d => new { d.DeptId, d.DeptName }).ToList();
+            ViewBag.Departments = depts;
+            TempData["AdminToken"] = "Yes";
+
+            return View();
         }
 
 
@@ -90,7 +110,16 @@ namespace trySupa.Controllers
                 };
                 _supabaseService.AddTeacherSubjectByAdmin(model);
             }
-            return RedirectToAction("AdminDashboard","Home");
+            return RedirectToAction("AdminDashboard");
         }
+
+        public class TeacherInfo
+        {
+            public int TeacherId { get; set; }
+            public string TeacherName { get; set; }
+            public int WorkingHours { get; set; }
+            public string Designation { get; set; }
+        }
+
     }
 }

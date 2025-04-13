@@ -27,7 +27,7 @@
 		@foreach (var item in subjects)
 		{
 			<p>
-				You are requested to select the priority slotes for @item.Value. Click <a asp-area="" asp-controller="Home" asp-action="SelectSubjectToTeach" asp-route-teacher_id="@ViewBag.tid" asp-route-Dept="@item.Key.Split('_')[2]" asp-route-Year="@item.Key.Split('_')[3]" asp-route-Subject="@item.Key.Split('_')[1]">here</a> to complete the action.
+				You are requested to select the priority slotes for @item.Value. Click <a asp-area="" asp-controller="Teacher" asp-action="SelectSubjectToTeach" asp-route-teacher_id="@ViewBag.tid" asp-route-Dept="@item.Key.Split('_')[2]" asp-route-Year="@item.Key.Split('_')[3]" asp-route-Subject="@item.Key.Split('_')[1]">here</a> to complete the action.
 			</p>
 
 		}

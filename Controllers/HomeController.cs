@@ -132,170 +132,9 @@ public class HomeController : Controller
         {6, "4:30pm - 5:30pm"}
     };
 
-//    public async Task<IActionResult> TeacherDashboard(int tid)
-//    {
-//        var token = HttpContext.Session.GetString("TeacherToken");
-//        if (token != "Yes")
-//        {
-//            return RedirectToAction("Index");
-//        }
-//        var teachers=await _supabaseService.GetTeachers();
-//        var subjects=await _supabaseService.GetSubjects();
-//        var depts=await _supabaseService.GetDepartments();
-//        var classes=await _supabaseService.GetClasses();
-//        var teacherSubjectByAdmin = await _supabaseService.GetTeacherSubjectsByAdmin();
-//        var result = (from ts in teacherSubjectsSelectedByAdmin
-//                      join t in teacher on ts.TeacherId equals t.TeacherId
-//                      join s in s1 on ts.SubjectId equals s.SubjectId
-//                      join d in dept on ts.DeptId equals d.DeptId
-//                      join c in classinfo on ts.ClassId equals c.ClassId
-//                      where ts.TeacherId == tid
-//                      select new
-//                      {
-//                          TeacherName = t.Teacher_Name,
-//                          SubjectName = s.Subject_Name,
-//                          DepartmentName = d.Dept_Name,
-//                          ClassName = c.Class_Name
-//                      }).ToList();
-//        var timetable = AllTeachertimetable.Where(t => t.TeacherId == tid).ToList();
-
-//        var structuredTimetable = new Dictionary<string, string>();
-
-//        foreach (var entry in timetable)
-//        {
-//            string key = $"{entry.Timeslot}_{entry.Day}";
-//            string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-//            string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
-//            string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
-//            structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
-//        }
-
-//        var subjectDict = result.ToDictionary(
-//    item => $"{item.TeacherName}_{item.SubjectName}_{item.DepartmentName}_{item.ClassName}",
-//    item => $"{item.SubjectName} ({item.DepartmentName}, {item.ClassName})"
-//);
-
-//        ViewBag.subjectsToSelect = subjectDict;
-//        ViewBag.TimeSlots = timeSlots;
-//        ViewBag.Timetable = structuredTimetable;
-//        ViewBag.tid = tid;
-
-//        return View();
-
-//    }
-
-
+    
     
 
-    public IActionResult AdminDashboard()
-    {
-        var token = HttpContext.Session.GetString("AdminToken");
-
-        if (token != "Yes")
-        {
-            return RedirectToAction("Index");
-        }
-        var years = AllTeachertimetable.Select(y => y.ClassId).Distinct().ToList();
-        var yearNames = classinfo.Where(c => !years.Contains(c.ClassId)).Select(c => c.DeptId).Distinct().ToList();
-        var depts = dept.Where(d => yearNames.Contains(d.DeptId)).Select(d => new { d.DeptId, d.Dept_Name }).ToList();
-        ViewBag.Departments = depts;
-        TempData["AdminToken"] = "Yes";
-
-        return View();
-    }
-
-
-    
-
-
-    //[HttpPost]
-    //public async Task<IActionResult> DisplayTimetable(string Department, string Class)
-    //{
-    //    var timetable = await _supabaseService.GetTimetable();
-    //    //var timetable = AllTeachertimetable.ToList();
-    //    var classId = classinfo.Where(c => c.Class_Name == Class).Select(c => c.ClassId).FirstOrDefault();
-    //    var deptId = dept.Where(d => d.Dept_Name == Department).Select(d => d.DeptId).FirstOrDefault();
-    //    var filteredTimetable = timetable
-    //    .Where(t => t.DeptId == deptId && t.ClassId == classId)
-    //    .OrderBy(t => t.Day)
-    //    .ThenBy(t => t.TimeSlot)
-    //    .ToList();
-
-
-    //    var structuredTimetable = new Dictionary<string, string>();
-
-    //    foreach (var entry in filteredTimetable)
-    //    {
-    //        string key = $"{entry.TimeSlot}_{entry.Day}";
-    //        string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-    //        string teacherName = teacher.FirstOrDefault(c => c.TeacherId == entry.TeacherId)?.Teacher_Name ?? "Unknown";
-    //        structuredTimetable[key] = $"{subjectName}<br>{teacherName}";
-    //    }
-
-    //    ViewBag.TimeSlots = timeSlots;
-    //    ViewBag.Timetable = structuredTimetable;
-
-
-
-    //    return View();
-    //}
-
-
-
-
-
-    //[HttpPost]
-    public IActionResult SelectSubjectToTeach(string teacher_id, string Dept, string Year, string Subject)
-    {
-
-        var timetable = AllTeachertimetable.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
-        var no_of_hours = s1.Where(s => s.Subject_Name == (Subject)).Select(s => s.No_of_Hours_per_Week).FirstOrDefault();
-
-        var structuredTimetable = new Dictionary<string, string>();
-
-        foreach (var entry in timetable)
-        {
-            string key = $"{entry.Timeslot}_{entry.Day}";
-            //string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-            //string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
-            //string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
-            structuredTimetable[key] = $"{Subject}<br>{Year}<br>{Dept}";
-        }
-
-        ViewBag.TimeSlots = timeSlots;
-        ViewBag.Timetable = structuredTimetable;
-        ViewBag.Subject = Subject;
-        ViewBag.Dept = Dept;
-        ViewBag.Year = Year;
-        ViewBag.No_Of_Hours_Per_Week = no_of_hours;
-        ViewBag.tid = teacher_id;
-
-        return View();
-
-        //var timetable = AllTeachertimetable.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
-        //var no_of_hours = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.No_of_Hours_per_Week).FirstOrDefault();
-
-        //var structuredTimetable = new Dictionary<string, string>();
-
-        //foreach (var entry in timetable)
-        //{
-        //    string key = $"{entry.Timeslot}_{entry.Day}";
-        //    string subjectName = s1.FirstOrDefault(s => s.SubjectId == entry.SubId)?.Subject_Name ?? "Unknown";
-        //    string className = classinfo.FirstOrDefault(c => c.ClassId == entry.ClassId)?.Class_Name ?? "Unknown";
-        //    string deptName = dept.FirstOrDefault(d => d.DeptId == entry.DeptId)?.Dept_Name ?? "Unknown";
-        //    structuredTimetable[key] = $"{subjectName}<br>{className}<br>{deptName}";
-        //}
-
-        //ViewBag.TimeSlots = timeSlots;
-        //ViewBag.Timetable = structuredTimetable;
-        //ViewBag.Subject = s1.Where(s => s.SubjectId == (Subject)).Select(s => s.Subject_Name).FirstOrDefault();
-        //ViewBag.Dept = dept.Where(d => d.DeptId == int.Parse(Dept)).Select(s => s.Dept_Name).FirstOrDefault();
-        //ViewBag.Year = classinfo.Where(c => c.ClassId == int.Parse(Year)).Select(c => c.Class_Name).FirstOrDefault();
-        //ViewBag.No_Of_Hours_Per_Week = no_of_hours;
-        //ViewBag.tid = teacher_id;
-
-        //return View();
-    }
 
     public IActionResult SaveSelectedSlots([FromBody] SlotSelectionModel model)
     {
@@ -359,15 +198,6 @@ public class HomeController : Controller
         return Json(subNames);
     }
 
-    public class TeacherInfo
-    {
-        public int TeacherId { get; set; }
-        public string TeacherName { get; set; }
-        public int WorkingHours { get; set; }
-        public string Designation { get; set; }
-    }
-
-
 
 
     [HttpPost]
@@ -396,21 +226,19 @@ public class HomeController : Controller
     }
 
 
-    
-
     [HttpGet]
-    public JsonResult GetYearsForRemainingDept(string deptId)
+    public async Task<JsonResult> GetYearsForRemainingDept(string deptId)
     {
-        var years = AllTeachertimetable.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).Distinct().ToList();
+        var timtable = await _supabaseService.GetTimetable();
+        var classes = await _supabaseService.GetClasses();
+        var years = timtable.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).Distinct().ToList();
 
-        var yearNames = classinfo
+        var yearNames = classes
             .Where(c => c.DeptId == int.Parse(deptId) && !years.Contains(c.ClassId))
-            .Select(c => new { c.ClassId, c.Class_Name })
+            .Select(c => new { c.ClassId, c.ClassName })
             .ToList();
         return Json(yearNames);
     }
-
-
 
 
 
