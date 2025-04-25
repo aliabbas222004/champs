@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Xml;
 using trySupa.Models;
@@ -60,16 +61,16 @@ public class HomeController : Controller
         };
 
 
-    List<Subject> s1 = new List<Subject>()
-        {
-            new Subject{SubjectId="301",Subject_Name="DLD",No_of_Hours_per_Week=5,time_of_Lecture=1},
-            new Subject{SubjectId="302",Subject_Name="OS",No_of_Hours_per_Week=5,time_of_Lecture=1},
-            new Subject{SubjectId="303",Subject_Name=".NET",No_of_Hours_per_Week=5,time_of_Lecture=1},
-            new Subject{SubjectId="304",Subject_Name="CO",No_of_Hours_per_Week=5,time_of_Lecture=1},
-            new Subject{SubjectId="305",Subject_Name="CN",No_of_Hours_per_Week=5,time_of_Lecture=1},
-            new Subject{SubjectId="306",Subject_Name="SE",No_of_Hours_per_Week=5,time_of_Lecture=1},
-            new Subject{SubjectId="307",Subject_Name="AM-III",No_of_Hours_per_Week=5,time_of_Lecture=1},
-        };
+    //List<Subject> s1 = new List<Subject>()
+    //    {
+    //        new Subject{SubjectId="301",Subject_Name="DLD",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //        new Subject{SubjectId="302",Subject_Name="OS",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //        new Subject{SubjectId="303",Subject_Name=".NET",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //        new Subject{SubjectId="304",Subject_Name="CO",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //        new Subject{SubjectId="305",Subject_Name="CN",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //        new Subject{SubjectId="306",Subject_Name="SE",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //        new Subject{SubjectId="307",Subject_Name="AM-III",No_of_Hours_per_Week=5,time_of_Lecture=1},
+    //    };
 
     List<ClassInfo> classinfo = new List<ClassInfo>()
         {
@@ -189,41 +190,42 @@ public class HomeController : Controller
         return Json(yearNames);
     }
 
-    [HttpGet]
-    public JsonResult GetSubjects(int deptId, int yearId)
-    {
-        var subjects = remainingSubjects.Where(s => s.DeptId == deptId && s.ClassId == yearId)
-                        .Select(s => s.SubjectId).ToList();
-        var subNames = s1.Where(s => subjects.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name }).ToList();
-        return Json(subNames);
-    }
+    //[HttpGet]
+    //public JsonResult GetSubjects(int deptId, int yearId)
+    //{
+    //    var subjects = remainingSubjects.Where(s => s.DeptId == deptId && s.ClassId == yearId)
+    //                    .Select(s => s.SubjectId).ToList();
+    //    var subNames = s1.Where(s => subjects.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name }).ToList();
+    //    return Json(subNames);
+    //}
 
 
 
-    [HttpPost]
-    public IActionResult GenerateTimeTable(string Dept, string Year)
-    {
+    //[HttpPost]
+    //public async Task<IActionResult> GenerateTimeTable(string Dept, string Year)
+    //{
 
-        var remainingSubjectsToSelect = remainingSubjects.Where(s => s.DeptId == int.Parse(Dept) && s.ClassId == int.Parse(Year)).Select(s => s.SubjectId);
-        TempData["Success"] = false;
-        if (remainingSubjectsToSelect.Count() == 0)
-        {
-            TempData["AlertMessage"] = "Timetable generated successfully!";
-            TempData["Success"] = true;
+    //    var remainingSubjectsToSelect = remainingSubjects.Where(s => s.DeptId == int.Parse(Dept) && s.ClassId == int.Parse(Year)).Select(s => s.SubjectId);
+    //    TempData["Success"] = false;
+    //    if (remainingSubjectsToSelect.Count() == 0)
+    //    {
+    //        TempData["AlertMessage"] = "Timetable generated successfully!";
+    //        TempData["Success"] = true;
 
-        }
-        else
-        {
-            var subinfo = s1.Where(s => remainingSubjectsToSelect.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name });
-            var message = "";
-            foreach (var item in subinfo)
-            {
-                message += " " + item.Subject_Name;
-            }
-            TempData["AlertMessage"] = "The subject -->" + message + "  are not selected by any teacher";
-        }
-        return RedirectToAction("AdminDashboard");
-    }
+    //    }
+    //    else
+    //    {
+    //        var 
+    //        var subinfo = s1.Where(s => remainingSubjectsToSelect.Contains(s.SubjectId)).Select(s => new { s.SubjectId, s.Subject_Name });
+    //        var message = "";
+    //        foreach (var item in subinfo)
+    //        {
+    //            message += " " + item.Subject_Name;
+    //        }
+    //        TempData["AlertMessage"] = "The subject -->" + message + "  are not selected by any teacher";
+    //    }
+    //    return RedirectToAction("AdminDashboard");
+    //}
 
 
     [HttpGet]
@@ -246,65 +248,208 @@ public class HomeController : Controller
 
 
 
-    public void GenerateTimetabl1(List<TimetableEntry> selectedSlots)
+
+    //private static void AssignSubject(Subject subject, List<SubYearDept> subYearDepts, List<Teacher> teachers,
+    //    List<TimetableEntry> allTeacherTimetable, List<TimetableEntry> selectedSlots, List<TimetableEntry> timetable)
+    //{
+    //    var assignedClasses = subYearDepts.Where(syd => syd.SubjectId == subject.SubjectId).ToList();
+
+    //    foreach (var classInfo in assignedClasses)
+    //    {
+    //        var availableTeachers = teachers.OrderByDescending(t => GetDesignationPriority(t.Designation)).ToList();
+
+    //        foreach (var teacher in availableTeachers)
+    //        {
+    //            var preferredSlots = selectedSlots.Where(s => s.TeacherId == teacher.TeacherId).ToList();
+    //            int hoursAssigned = 0;
+
+    //            foreach (var slot in preferredSlots)
+    //            {
+    //                if (hoursAssigned < subject.No_of_Hours_per_Week &&
+    //                    IsSlotAvailable(teacher.TeacherId, slot.Day, slot.Timeslot, allTeacherTimetable, timetable))
+    //                {
+    //                    timetable.Add(new TimetableEntry
+    //                    {
+    //                        TeacherId = teacher.TeacherId,
+    //                        Day = slot.Day,
+    //                        Timeslot = slot.Timeslot,
+    //                        DeptId = classInfo.DeptId,
+    //                        ClassId = classInfo.ClassId,
+    //                        SubId = subject.SubjectId
+    //                    });
+    //                    hoursAssigned += subject.time_of_Lecture;
+
+    //                    if (hoursAssigned >= subject.No_of_Hours_per_Week)
+    //                        break;
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
+
+    public async Task<List<TimetableModel>> GenerateTimetableAsync(int deptId, string classId)
     {
-        List<TimetableEntry> timetable = new List<TimetableEntry>();
 
-        foreach (var sub in s1.Where(s => s.Subject_Name.ToString().EndsWith("L")))
+        var timetable = new List<TimetableModel>();
+
+        var subYearDeptList = await _supabaseService.GetSubYearDept();
+        var subjectIds = subYearDeptList
+            .Where(syd => syd.DeptId == deptId && syd.ClassId == classId)
+            .Select(syd => syd.SubjectId)
+            .Distinct()
+            .ToList();
+        
+        var nOG = await _supabaseService.GetClasses();
+        var noOfGroups=nOG.Where(s=>s.DeptId==deptId && s.ClassId==classId).Select(s=>s.NoOfGroups).FirstOrDefault();
+        
+        var allSubjects = await _supabaseService.GetSubjects();
+        var subjectDetails = allSubjects.Where(s => subjectIds.Contains(s.SubjectId));
+
+        var adminAssignments = await _supabaseService.GetTeacherSubjectsByAdmin();
+        var allTeachers = await _supabaseService.GetTeachers();
+        var selectedTeacherIds = adminAssignments.Where(a=>!a.SubjectId.Contains("L")).Select(a => a.TeacherId).Distinct().ToList();
+        var selectedTeachers = allTeachers.Where(t => selectedTeacherIds.Contains(t.TeacherId)).ToList();
+
+        var selectedSlots = await _supabaseService.GetTeacherPreferredSlots(); // Returns List<TimetableEntry>
+
+
+        var oS = await _supabaseService.GetTimetable();
+        // This is for LAB ......................
         {
-            AssignSubject(sub, subYearDepts, teacher, AllTeachertimetable, selectedSlots, timetable);
-        }
+            var labSubjects = subjectDetails.Where(s => s.SubjectName.Contains("L"));
+            var selectedLabTeacherId = adminAssignments.Where(s=>s.SubjectId.Contains("L")).Select(a => a.TeacherId).Distinct();
+            var occupiedSlots = oS.Where(t => selectedLabTeacherId.Contains(t.TeacherId)).ToList();
 
-        foreach (var sub in s1.Where(s => !s.Subject_Name.ToString().EndsWith("L")))
-        {
-            AssignSubject(sub, subYearDepts, teacher, AllTeachertimetable, selectedSlots, timetable);
-        }
-
-    }
-
-    private static void AssignSubject(Subject subject, List<SubYearDept> subYearDepts, List<Teacher> teachers,
-        List<TimetableEntry> allTeacherTimetable, List<TimetableEntry> selectedSlots, List<TimetableEntry> timetable)
-    {
-        var assignedClasses = subYearDepts.Where(syd => syd.SubjectId == subject.SubjectId).ToList();
-
-        foreach (var classInfo in assignedClasses)
-        {
-            var availableTeachers = teachers.OrderByDescending(t => GetDesignationPriority(t.Designation)).ToList();
-
-            foreach (var teacher in availableTeachers)
-            {
-                var preferredSlots = selectedSlots.Where(s => s.TeacherId == teacher.TeacherId).ToList();
-                int hoursAssigned = 0;
-
-                foreach (var slot in preferredSlots)
+            var availableLabSlots = new List<(string Day, int Timeslot)>();
+            var labSlotCandidates = new List<(string Day, int Timeslot)>
                 {
-                    if (hoursAssigned < subject.No_of_Hours_per_Week &&
-                        IsSlotAvailable(teacher.TeacherId, slot.Day, slot.Timeslot, allTeacherTimetable, timetable))
-                    {
-                        timetable.Add(new TimetableEntry
-                        {
-                            TeacherId = teacher.TeacherId,
-                            Day = slot.Day,
-                            Timeslot = slot.Timeslot,
-                            DeptId = classInfo.DeptId,
-                            ClassId = classInfo.ClassId,
-                            SubId = subject.SubjectId
-                        });
-                        hoursAssigned += subject.time_of_Lecture;
+                    ("Monday", 1), ("Monday", 5),
+                    ("Tuesday", 1), ("Tuesday", 5),
+                    ("Wednesday", 1), ("Wednesday", 5),
+                    ("Thursday", 1), ("Thursday", 5),
+                    ("Friday", 1), ("Friday", 5),
+                    ("Saturday", 1), ("Saturday", 5),
+                };
 
-                        if (hoursAssigned >= subject.No_of_Hours_per_Week)
-                            break;
+            foreach (var (day, timeslot) in labSlotCandidates)
+            {
+                bool isFreeForAll = selectedLabTeacherId.All(tid =>
+                    !occupiedSlots.Any(o => o.TeacherId == tid && o.Day == day && o.TimeSlot == timeslot)
+                );
+
+                if (isFreeForAll)
+                    availableLabSlots.Add((day, timeslot));
+
+                if (availableLabSlots.Count == noOfGroups)
+                    break;
+            }
+
+            foreach(var (day, timeslot) in availableLabSlots)
+            {
+                foreach (var teacher in selectedLabTeacherId)
+                {
+                    var sid = adminAssignments.Where(a => a.TeacherId == teacher).Select(a=>a.SubjectId).FirstOrDefault();
+                    timetable.Add(new TimetableModel
+                    {
+                        TeacherId = teacher,
+                        Day = day,
+                        TimeSlot = timeslot,
+                        DeptId = deptId,
+                        ClassId = classId,
+                        SubId = sid
+                    });
+                }
+            }
+
+        }
+
+        var theorySubjects = subjectDetails.Where(s => !s.SubjectId.Contains("L"));
+        theorySubjects = theorySubjects
+            .Select(subject =>
+            {
+                var assignedTeacherEntry = adminAssignments.FirstOrDefault(t =>
+                    t.SubjectId == subject.SubjectId && t.DeptId == deptId && t.ClassId == classId);
+
+                var teacher = allTeachers.FirstOrDefault(t => t.TeacherId == assignedTeacherEntry?.TeacherId);
+                int priority = teacher != null ? GetDesignationPriority(teacher.Designation) : 0;
+
+                return new { subject, priority };
+            })
+            .OrderByDescending(x => x.priority)
+            .Select(x => x.subject)
+            .ToList();
+
+
+        foreach (var subject in theorySubjects)
+        {
+            var assignedTeacherEntry = adminAssignments.FirstOrDefault(t =>
+                t.SubjectId == subject.SubjectId && t.DeptId == deptId && t.ClassId == classId);
+
+            var teacher = allTeachers.FirstOrDefault(t => t.TeacherId == assignedTeacherEntry.TeacherId);
+
+            var teacherSlots = selectedSlots .Where(s => s.TeacherId == teacher.TeacherId) .ToList();
+
+            int hoursAssigned = 0;
+            int maxHours = subject.NoOfHoursPerWeek;
+
+            foreach (var slot in teacherSlots.OrderBy(s => s.Day).ThenBy(s => s.Timeslot))
+            {
+                if (hoursAssigned >= maxHours) break;
+                bool isSlotTaken = timetable.Any(t => t.Day == slot.Day && t.TimeSlot == slot.Timeslot);
+                if (!isSlotTaken)
+                {
+
+                    timetable.Add(new TimetableModel
+                    {
+                        TeacherId = teacher.TeacherId,
+                        Day = slot.Day,
+                        TimeSlot = slot.Timeslot,
+                        DeptId = deptId,
+                        ClassId = classId,
+                        SubId = subject.SubjectId
+                    });
+
+                    hoursAssigned += subject.TimeOfLecture;
+                }
+                
+            }
+
+            if (hoursAssigned < maxHours)
+            {
+                var days = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+
+                foreach (var day in days)
+                {
+                    for (int timeslot = 1; timeslot <= 6; timeslot++)
+                    {
+                        
+                        bool isSlotTaken = timetable.Any(t => t.Day == day && t.TimeSlot == timeslot);
+                        if (!isSlotTaken)
+                        {
+                            if (hoursAssigned >= maxHours) break;
+
+                            if (!oS.Any(t => t.TeacherId == teacher.TeacherId && t.Day == day && t.TimeSlot == timeslot)
+                               )
+                            {
+                                timetable.Add(new TimetableModel
+                                {
+                                    TeacherId = teacher.TeacherId,
+                                    Day = day,
+                                    TimeSlot = timeslot,
+                                    DeptId = deptId,
+                                    ClassId = classId,
+                                    SubId = subject.SubjectId
+                                });
+
+                                hoursAssigned += subject.TimeOfLecture;
+                            }
+                        }
                     }
                 }
             }
         }
-    }
 
-    private static bool IsSlotAvailable(int teacherId, string day, int timeslot, List<TimetableEntry> allTeacherTimetable,
-        List<TimetableEntry> timetable)
-    {
-        return !allTeacherTimetable.Any(t => t.TeacherId == teacherId && t.Day == day && t.Timeslot == timeslot)
-            && !timetable.Any(t => t.TeacherId == teacherId && t.Day == day && t.Timeslot == timeslot);
+        return timetable;
     }
 
     private static int GetDesignationPriority(string designation)
@@ -319,6 +464,16 @@ public class HomeController : Controller
             _ => 0
         };
     }
+
+
+    private async Task<bool> IsSlotAvailable(int teacherId, string day, int timeslot, List<TimetableModel> timetable)
+    {
+        return !timetable.Any(t =>
+            (t.TeacherId == teacherId || t.ClassId == t.ClassId) &&
+            t.Day == day && t.TimeSlot == timeslot);
+    }
+
+    
 
     // GET: Home/Index
     public async Task<IActionResult> Index()
