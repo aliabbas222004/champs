@@ -123,7 +123,10 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 						teacherId: "@ViewBag.tid", 
-						selectedSlots: JSON.parse(selectedData) 
+						selectedSlots: JSON.parse(selectedData),
+						DeptId: "@ViewBag.DeptId",
+						SubjId: "@ViewBag.SubjId",
+						ClassId: "@ViewBag.ClassId",
 					})
 			}).then(response => {
 				if (response.ok) return response.json();
@@ -131,7 +134,7 @@
 			}).then(data => {
 				alert("Slots saved successfully!");
 				let tid = parseInt("@ViewBag.tid", 10);
-				window.location.href = `/Home/TeacherDashboard?tid=${tid}`;
+				window.location.href = `/Teacher/TeacherDashboard?tid=${tid}`;
 			}).catch(error => {
 				console.error("Error:", error);
 			});

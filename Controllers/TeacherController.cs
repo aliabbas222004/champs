@@ -85,8 +85,13 @@ namespace trySupa.Controllers
             var subjects = await _supabaseService.GetSubjects();
             var depts = await _supabaseService.GetDepartments();
             var classes = await _supabaseService.GetClasses();
-            var teacherSubjectByAdmin = await _supabaseService.GetTeacherSubjectsByAdmin();
-            var allTimetable = await _supabaseService.GetTimetable();
+            var tt = await _supabaseService.GetTeacherSubjectsByAdmin();
+            var selectdSl = await _supabaseService.GetSelectedSlots();
+            var SS = selectdSl.Where(a => a.TeacherId == tid).Select(a => a.SubId).Distinct();
+            var teacherSubjectByAdmin = tt.Where(t => !SS.Contains(t.SubjectId));
+            
+                
+                var allTimetable = await _supabaseService.GetTimetable();
             var result = (from ts in teacherSubjectByAdmin
                           join t in teachers on ts.TeacherId equals t.TeacherId
                           join s in subjects on ts.SubjectId equals s.SubjectId
@@ -164,6 +169,7 @@ namespace trySupa.Controllers
 
         public async Task<IActionResult> SelectSubjectToTeach(string teacher_id, string Dept, string Year, string Subject)
         {
+
             var timetables = await _supabaseService.GetTimetable();
             var subjects = await _supabaseService.GetSubjects();
             var timetable = timetables.Where(t => t.TeacherId == int.Parse(teacher_id)).ToList();
@@ -176,6 +182,14 @@ namespace trySupa.Controllers
                 string key = $"{entry.TimeSlot}_{entry.Day}";
                 structuredTimetable[key] = $"{Subject}<br>{Year}<br>{Dept}";
             }
+            var depts = await _supabaseService.GetDepartments();
+            var deptId = depts.Where(a => a.DeptName == Dept).Select(a => a.DeptId).FirstOrDefault();
+
+            var subjs = await _supabaseService.GetSubjects();
+            var subId = subjs.Where(a => a.SubjectName == Subject).Select(a => a.SubjectId).FirstOrDefault();
+
+            var classes = await _supabaseService.GetClasses();
+            var classId = classes.Where(a => a.ClassName == Year).Select(a => a.ClassId).FirstOrDefault();
 
             ViewBag.TimeSlots = timeSlots;
             ViewBag.Timetable = structuredTimetable;
@@ -185,6 +199,9 @@ namespace trySupa.Controllers
             ViewBag.No_Of_Hours_Per_Week = no_of_hours;
             ViewBag.tid = teacher_id;
 
+            ViewBag.DeptId = deptId;
+            ViewBag.ClassId = classId;
+            ViewBag.SubjId = subId;
             return View();
         }
     }

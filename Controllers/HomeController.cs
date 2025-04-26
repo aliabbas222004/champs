@@ -137,7 +137,7 @@ public class HomeController : Controller
     
 
 
-    public IActionResult SaveSelectedSlots([FromBody] SlotSelectionModel model)
+    public async Task<IActionResult> SaveSelectedSlots([FromBody] SlotSelectionModel model)
     {
         try
         {
@@ -147,11 +147,25 @@ public class HomeController : Controller
                 return BadRequest("No slots selected.");
             }
 
-            Console.WriteLine($"Teacher ID: {model.TeacherId}");
             foreach (var slot in model.SelectedSlots)
             {
-                Console.WriteLine($"Selected Slot: {slot.Day} - {slot.TimeSlot}");
+                
+                var selectedSlot = new SelectedSlotModel
+                {
+                    TeacherId = model.TeacherId,  
+                    DeptId = int.Parse(model.DeptId),         
+                    ClassId = model.ClassId,       
+                    SubId = model.SubjId,      
+                    Day = slot.day,
+                    TimeSlot = slot.slot
+                };
+                await _supabaseService.AddSelectedSlot(selectedSlot);
             }
+            //foreach (var slot in model.SelectedSlots)
+            //{
+
+            //    Console.WriteLine($"Selected Slot: {slot.day} - {slot.slot}");
+            //}
 
             return Json(new { success = true, message = "Slots saved successfully!" });
         }
@@ -164,22 +178,50 @@ public class HomeController : Controller
 
     public class SlotSelectionModel
     {
-        public string TeacherId { get; set; }
+        public int TeacherId { get; set; }
+
         public List<SelectedSlot> SelectedSlots { get; set; }
+
+        public string DeptId { get; set; }
+        public string SubjId { get; set; }
+        public string ClassId { get; set; }
     }
 
     public class SelectedSlot
     {
-        public string Day { get; set; }
-        public int TimeSlot { get; set; }
+        public int slot { get; set; }
+        public string day { get; set; }
     }
+
+    //public class SlotSelectionModel
+    //{
+    //    public string TeacherId { get; set; }
+    //    public List<SelectedSlot> SelectedSlots { get; set; }
+    //}
+
+    //public class SelectedSlot
+    //{
+    //    public string Day { get; set; }
+    //    public int TimeSlot { get; set; }
+    //}
 
     [HttpGet]
     public async Task<JsonResult> GetYears(string deptId)
     {
         Console.WriteLine(deptId);
         var remainingSubs = await _supabaseService.GetRemainingSubjects();
-        var classes = await _supabaseService.GetClasses();
+        var adminSelectedClasses = await _supabaseService.GetTeacherSubjectsByAdmin();
+        var asC = adminSelectedClasses.Select(a => a.ClassId).Distinct();
+        foreach (var item in asC)
+        {
+            Console.WriteLine(item);
+        }
+        var allClasses = await _supabaseService.GetClasses();
+        var classes=allClasses.Where(c => !asC.Contains(c.ClassId)).ToList();
+        foreach (var item in classes)
+        {
+            Console.WriteLine(item);
+        }
         var years = remainingSubs.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).ToList();
         var yearNames = classes.Where(y => years.Contains(y.ClassId)).Select(y => new { y.ClassId, y.ClassName }).ToList();
         foreach (var year in yearNames)
@@ -232,7 +274,23 @@ public class HomeController : Controller
     public async Task<JsonResult> GetYearsForRemainingDept(string deptId)
     {
         var timtable = await _supabaseService.GetTimetable();
-        var classes = await _supabaseService.GetClasses();
+        var allClasses = await _supabaseService.GetClasses();
+
+
+        var adminSelectedClasses = await _supabaseService.GetTeacherSubjectsByAdmin();
+        var asC = adminSelectedClasses.Select(a => a.ClassId).Distinct();
+        foreach (var item in asC)
+        {
+            Console.WriteLine(item);
+        }
+        var classes = allClasses.Where(c => !asC.Contains(c.ClassId)).ToList();
+        foreach (var item in classes)
+        {
+            Console.WriteLine(item);
+        }
+
+
+
         var years = timtable.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).Distinct().ToList();
 
         var yearNames = classes
@@ -242,7 +300,20 @@ public class HomeController : Controller
         return Json(yearNames);
     }
 
+    [HttpGet]
+    public async Task<JsonResult> GetYearsForRemainingDept1(string deptId)
+    {
+        Console.WriteLine("Hello");
+        var timtable = await _supabaseService.GetTimetable();
+        var classes = await _supabaseService.GetClasses();
+        var years = timtable.Where(y => y.DeptId == int.Parse(deptId)).Select(y => y.ClassId).Distinct().ToList();
 
+        var yearNames = classes
+            .Where(c => c.DeptId == int.Parse(deptId) && !years.Contains(c.ClassId))
+            .Select(c => new { c.ClassId, c.ClassName })
+            .ToList();
+        return Json(yearNames);
+    }
 
     //Time table generation algo..................
 
@@ -310,7 +381,7 @@ public class HomeController : Controller
         var selectedTeacherIds = adminAssignments.Where(a=>!a.SubjectId.Contains("L")).Select(a => a.TeacherId).Distinct().ToList();
         var selectedTeachers = allTeachers.Where(t => selectedTeacherIds.Contains(t.TeacherId)).ToList();
 
-        var selectedSlots = await _supabaseService.GetTeacherPreferredSlots(); // Returns List<TimetableEntry>
+        var selectedSlots = await _supabaseService.GetSelectedSlots(); // Returns List<TimetableEntry>
 
 
         var oS = await _supabaseService.GetTimetable();
@@ -392,10 +463,10 @@ public class HomeController : Controller
             int hoursAssigned = 0;
             int maxHours = subject.NoOfHoursPerWeek;
 
-            foreach (var slot in teacherSlots.OrderBy(s => s.Day).ThenBy(s => s.Timeslot))
+            foreach (var slot in teacherSlots.OrderBy(s => s.Day).ThenBy(s => s.TimeSlot))
             {
                 if (hoursAssigned >= maxHours) break;
-                bool isSlotTaken = timetable.Any(t => t.Day == slot.Day && t.TimeSlot == slot.Timeslot);
+                bool isSlotTaken = timetable.Any(t => t.Day == slot.Day && t.TimeSlot == slot.TimeSlot);
                 if (!isSlotTaken)
                 {
 
@@ -403,7 +474,7 @@ public class HomeController : Controller
                     {
                         TeacherId = teacher.TeacherId,
                         Day = slot.Day,
-                        TimeSlot = slot.Timeslot,
+                        TimeSlot = slot.TimeSlot,
                         DeptId = deptId,
                         ClassId = classId,
                         SubId = subject.SubjectId

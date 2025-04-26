@@ -94,17 +94,17 @@ namespace trySupa.Controllers
 
 
         [HttpPost]
-        public IActionResult AssignTeachers(Dictionary<int, int> selectedTeachers, string Dept, string Year)
+        public IActionResult AssignTeachers(Dictionary<string, int> selectedTeachers, string Dept, string Year)
         {
             Console.WriteLine(Dept + "   " + Year);
             foreach (var assignment in selectedTeachers)
             {
-                int subjectId = assignment.Key;
+                string subjectId = assignment.Key;
                 int teacherId = assignment.Value;
                 var model = new TeacherSubjectsSelectedByAdminModel
                 {
                     TeacherId = teacherId,
-                    SubjectId = subjectId.ToString(),
+                    SubjectId = subjectId,
                     DeptId = int.Parse(Dept),
                     ClassId = Year
                 };

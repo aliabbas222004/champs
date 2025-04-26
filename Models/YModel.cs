@@ -166,3 +166,26 @@ public class RemainingSubjectsModel : BaseModel
     [Column("dept_id")]
     public int DeptId { get; set; }
 }
+
+
+[Table("selectedslots")]
+public class SelectedSlotModel : BaseModel
+{
+    [Column("teacherid")]
+    public int TeacherId { get; set; }
+
+    [Column("day")]
+    public string Day { get; set; }
+
+    [Column("timeslot")]
+    public int TimeSlot { get; set; }
+
+    [Column("deptid")]
+    public int DeptId { get; set; }
+
+    [Column("classid")]
+    public string ClassId { get; set; }
+
+    [Column("subid")]
+    public string SubId { get; set; }
+}

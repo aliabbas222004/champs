@@ -469,4 +469,46 @@ public class SupabaseService
             return false;
         }
     }
+
+    public async Task<bool> DeleteSelectedSlot(SelectedSlotModel model)
+    {
+        try
+        {
+            await _supabase.From<SelectedSlotModel>().Delete(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting selected slot: {ex.Message}");
+            return false;
+        }
+    }
+    public async Task<bool> UpdateSelectedSlot(SelectedSlotModel model)
+    {
+        try
+        {
+            await _supabase.From<SelectedSlotModel>().Update(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating selected slot: {ex.Message}");
+            return false;
+        }
+    }
+    public async Task<List<SelectedSlotModel>> GetSelectedSlots() =>
+        (await _supabase.From<SelectedSlotModel>().Select("*").Get()).Models;
+    public async Task<bool> AddSelectedSlot(SelectedSlotModel model)
+    {
+        try
+        {
+            await _supabase.From<SelectedSlotModel>().Insert(model);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding selected slot: {ex.Message}");
+            return false;
+        }
+    }
 }

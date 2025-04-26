@@ -4,9 +4,16 @@
         @foreach (var subject in ViewBag.SubjectTeachers)
         {
             var subjectInfo = subject.Key;
-            <h3 class="text-center">For subject: @subjectInfo.SubjectName, the available teachers are:</h3>
+            <h4 class="text-center mt-5">For subject: @subjectInfo.SubjectName, the available teachers are:</h4>
 
             <table class="table table-bordered table-striped">
+                <tr>
+                    <td class="text-center">Teacher Id</td>
+                    <td class="text-center">Teacher Name</td>
+                    <td class="text-center">Designation </td>
+                    <td class="text-center">Working Hours</td>
+                    <td class="text-center"></td>
+                </tr>
                 @foreach (var teacher in subject.Value)
                 {
                     <tr>
