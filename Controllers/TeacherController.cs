@@ -85,7 +85,8 @@ namespace trySupa.Controllers
             var subjects = await _supabaseService.GetSubjects();
             var depts = await _supabaseService.GetDepartments();
             var classes = await _supabaseService.GetClasses();
-            var tt = await _supabaseService.GetTeacherSubjectsByAdmin();
+            var tt1 = await _supabaseService.GetTeacherSubjectsByAdmin();
+            var tt = tt1.Where(t => !t.SubjectId.Contains("L"));
             var selectdSl = await _supabaseService.GetSelectedSlots();
             var SS = selectdSl.Where(a => a.TeacherId == tid).Select(a => a.SubId).Distinct();
             var teacherSubjectByAdmin = tt.Where(t => !SS.Contains(t.SubjectId));
@@ -203,6 +204,58 @@ namespace trySupa.Controllers
             ViewBag.ClassId = classId;
             ViewBag.SubjId = subId;
             return View();
+        }
+
+
+        public async Task<IActionResult> SaveSelectedSlots([FromBody] SlotSelectionModel model)
+        {
+            try
+            {
+                if (model == null || model.SelectedSlots == null || !model.SelectedSlots.Any())
+                {
+                    Console.WriteLine("Hello");
+                    return BadRequest("No slots selected.");
+                }
+
+                foreach (var slot in model.SelectedSlots)
+                {
+
+                    var selectedSlot = new SelectedSlotModel
+                    {
+                        TeacherId = model.TeacherId,
+                        DeptId = int.Parse(model.DeptId),
+                        ClassId = model.ClassId,
+                        SubId = model.SubjId,
+                        Day = slot.day,
+                        TimeSlot = slot.slot
+                    };
+                    await _supabaseService.AddSelectedSlot(selectedSlot);
+                }
+
+                return Json(new { success = true, message = "Slots saved successfully!" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while processing your request.");
+            }
+        }
+
+        public class SlotSelectionModel
+        {
+            public int TeacherId { get; set; }
+
+            public List<SelectedSlot> SelectedSlots { get; set; }
+
+            public string DeptId { get; set; }
+            public string SubjId { get; set; }
+            public string ClassId { get; set; }
+        }
+
+        public class SelectedSlot
+        {
+            public int slot { get; set; }
+            public string day { get; set; }
         }
     }
 }
