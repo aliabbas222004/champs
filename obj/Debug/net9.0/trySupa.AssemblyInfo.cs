@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("15a1eef7-3f1c-4198-b7cf-e4cfea9f1bfe")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("trySupa")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+37751d0ccaf1900b080f41c68424db8be919bf4f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18fb31015374cf19b8b6cd4d37c87c0c06aec165")]
 [assembly: System.Reflection.AssemblyProductAttribute("trySupa")]
 [assembly: System.Reflection.AssemblyTitleAttribute("trySupa")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -47,10 +47,12 @@ namespace trySupa.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string TeacherID, string Password)
         {
+            
             var teacher_info = await _supabaseService.GetTeachers();
             var t = teacher_info.FirstOrDefault(t => t.TeacherId.ToString() == TeacherID && t.Password == Password);
             if (t == null)
             {
+                
                 return View("Login");
             }
             else
