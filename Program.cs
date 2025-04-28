@@ -37,8 +37,8 @@ var app = builder.Build();
 
 // Middleware
 app.UseRouting();
-app.UseSession();
 app.UseAuthorization();
+app.UseSession();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

@@ -1438,23 +1438,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Zainali\\.nuget\\packages\\": {},
+    "C:\\Users\\JATIN PRAJAPATI\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Zainali\\source\\repos\\supapro\\trySupa\\trySupa\\trySupa.csproj",
+      "projectUniqueName": "C:\\Users\\JATIN PRAJAPATI\\Source\\Repos\\champs33\\trySupa.csproj",
       "projectName": "trySupa",
-      "projectPath": "C:\\Users\\Zainali\\source\\repos\\supapro\\trySupa\\trySupa\\trySupa.csproj",
-      "packagesPath": "C:\\Users\\Zainali\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Zainali\\source\\repos\\supapro\\trySupa\\trySupa\\obj\\",
+      "projectPath": "C:\\Users\\JATIN PRAJAPATI\\Source\\Repos\\champs33\\trySupa.csproj",
+      "packagesPath": "C:\\Users\\JATIN PRAJAPATI\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\JATIN PRAJAPATI\\Source\\Repos\\champs33\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Zainali\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\JATIN PRAJAPATI\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
