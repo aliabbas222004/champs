@@ -28,6 +28,64 @@ public class SupabaseService
         }
     }
 
+    public async Task<bool> AddNotification(Notification notification)
+    {
+        try
+        {
+            // Fetch the current highest 'Id' from the database and order it by 'Id' descending
+            var result = (await _supabase
+                .From<Notification>()
+                .Select("id")
+                .Order("id", Supabase.Postgrest.Constants.Ordering.Descending)  // Use Order() instead of OrderBy()
+                .Limit(1)
+                .Get()).Models;
+
+            // Step 2: Check if we got a result, otherwise set id to 1 (if the table is empty)
+            int newId = 1;
+            if (result?.Count > 0)
+            {
+                newId = result[0].Id + 1;  // Increment the greatest Id by 1 (use 'Id' with a capital 'I')
+            }
+
+            // Step 3: Set the incremented Id to the notification
+            notification.Id = newId;
+
+            // Step 4: Insert the notification into the table
+            await _supabase.From<Notification>().Insert(notification);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding notification: {ex.Message}");
+            return false;
+        }
+    }
+
+
+
+
+    // ✅ Get Last 5 Notifications
+    public async Task<List<Notification>> GetLast5Notifications()
+    {
+        try
+        {
+
+            var notifications = (await _supabase
+                .From<Notification>()
+                .Select("*")
+                .Order("id", Supabase.Postgrest.Constants.Ordering.Descending)
+                .Limit(5)
+                .Get()).Models;
+
+            return notifications;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching last 5 notifications: {ex.Message}");
+            return new List<Notification>();
+        }
+    }
 
 
     // ✅ CRUD Operations for Dept Table

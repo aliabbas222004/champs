@@ -172,7 +172,16 @@ public class HomeController : Controller
 
         return View();
     }
+    [HttpGet]
+    public async Task<JsonResult> Notification()
+    {
+        var last5Notifications = await _supabaseService.GetLast5Notifications();
 
+
+        string tooltipMessage = string.Join("\n", last5Notifications.Select(n => $"@{n.Dept}--({n.Year})->> {n.Desce}"));
+
+        return Json(tooltipMessage);
+    }
 
 }
 

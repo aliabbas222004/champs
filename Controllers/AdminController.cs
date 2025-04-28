@@ -125,6 +125,12 @@ namespace trySupa.Controllers
         public async Task<IActionResult> GenerateTimeTableForDept(int Dept, string Year)
         {
             await CreateTimeTable(Dept, Year);
+            Notification notification = new Notification();
+            notification.Dept = Dept + "";
+            notification.Year = Year;
+            notification.Desce = "new timetable is generated";
+            await _supabaseService.AddNotification(notification);
+            Console.WriteLine("jatin    -------");
 
             return RedirectToAction("AdminDashboard", "Admin");
         }

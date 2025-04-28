@@ -189,3 +189,18 @@ public class SelectedSlotModel : BaseModel
     [Column("subid")]
     public string SubId { get; set; }
 }
+[Table("notification")]
+public class Notification : BaseModel
+{
+    [Column("id")]
+    public int Id { get; set; }
+
+    [Column("dept")]
+    public string Dept { get; set; }
+
+    [Column("year")]
+    public string Year { get; set; }
+
+    [Column("desce")]
+    public string Desce { get; set; }
+}
