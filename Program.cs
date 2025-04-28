@@ -15,7 +15,11 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 // Force use HTTP
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.ListenAnyIP(8080); // Only HTTP, no HTTPS
+    var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
+    if (string.IsNullOrEmpty(urls))
+    {
+        serverOptions.ListenAnyIP(8080); // Development
+    }
 });
 
 // Load configuration
