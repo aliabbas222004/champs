@@ -68,7 +68,7 @@
                             if (TempData.Peek("TeacherToken") != null)
                             {
                         <div class="d-flex mx-3">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TeacherDashboard" asp-route-tid="@ViewBag.tid">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Teacher" asp-action="TeacherDashboard" asp-route-tid="@ViewBag.tid">Home</a>
                         </div>
                         <div class="d-flex mx-3">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Teacher" asp-action="TeacherInterest" asp-route-tid="@ViewBag.tid">Interested Subjects</a>
@@ -81,6 +81,15 @@
                             {
                         <div class="d-flex mx-2">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminDashboard">Home</a>
+                        </div>
+                        <div class="d-flex nav-item dropdown mx-2">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Edit</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="AddDept">Add Department</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="AddClass">Add Class</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="AddSubject">Add Subject</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="AddSubjectForClass">Add Subject For a Class</a></li>
+                            </ul>
                         </div>
                         <div class="d-flex mx-2">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Logout">Logout</a>
