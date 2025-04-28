@@ -350,5 +350,107 @@ namespace trySupa.Controllers
                 t.Day == day && t.TimeSlot == timeslot);
         }
 
+
+        public IActionResult AddDept()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddDept(DeptModel dept)
+        {
+            if (ModelState.IsValid)
+            {
+                bool result=await _supabaseService.AddDepartment(dept);
+            }
+            ViewBag.Message = "Department added!";
+            return View("AddDept");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> AddClass()
+        {
+            var departments = await _supabaseService.GetDepartments();
+            ViewBag.Departments = departments; 
+            return View(new ClassInfoModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddClass(ClassInfoModel classInfo)
+        {
+            if (ModelState.IsValid)
+            {
+                bool result = await _supabaseService.AddClass(classInfo);
+                ViewBag.Message = result ? "Class added successfully!" : "Failed to add class!";
+            }
+
+            var departments = await _supabaseService.GetDepartments(); 
+            ViewBag.Departments = departments;
+
+            return View(classInfo);
+        }
+
+        [HttpGet]
+        public IActionResult AddSubject()
+        {
+            return View(new SubjectModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSubject(SubjectModel subject)
+        {
+            if (ModelState.IsValid)
+            {
+                bool result = await _supabaseService.AddSubject(subject);
+                ViewBag.Message = result ? "Subject added successfully!" : "Failed to add subject!";
+            }
+            return View(subject);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> AddSubjectForClass()
+        {
+            var departments = await _supabaseService.GetDepartments();
+            var subjects = await _supabaseService.GetSubjects();
+
+            ViewBag.Departments = departments;
+            ViewBag.Subjects = subjects;
+
+            return View(new SubYearDeptModel());
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetClassesByDept(string deptId)
+        {
+            Console.WriteLine(deptId);
+            var c = await _supabaseService.GetClasses();
+            var classes = c.Where(d => d.DeptId == int.Parse(deptId)).Select(y => new { y.ClassId, y.ClassName }).ToList();
+            return Json(classes);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSubjectForClass(SubYearDeptModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _supabaseService.AddSubYearDept(model);
+
+                    ViewBag.Message = "Subject successfully assigned to the class!";
+                    return RedirectToAction("AddSubjectForClass");
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = "Error occurred: " + ex.Message;
+                }
+            }
+
+            return View(model);
+        }
+
+
     }
 }

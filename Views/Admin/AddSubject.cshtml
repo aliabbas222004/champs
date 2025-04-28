@@ -1,0 +1,53 @@
+﻿@model SubjectModel
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @ViewBag.Message
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <form asp-action="AddSubject" method="post">
+
+            <h3 class="text-center mb-4">Add Subject</h3>
+
+            <div class="form-floating mb-3">
+                <input asp-for="SubjectId" class="form-control" placeholder="Subject ID" />
+                <label asp-for="SubjectId"></label>
+                <span asp-validation-for="SubjectId" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="SubjectName" class="form-control" placeholder="Subject Name" />
+                <label asp-for="SubjectName"></label>
+                <span asp-validation-for="SubjectName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="NoOfHoursPerWeek" class="form-control" type="number" min="1" placeholder="Hours per Week" />
+                <label asp-for="NoOfHoursPerWeek"></label>
+                <span asp-validation-for="NoOfHoursPerWeek" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input asp-for="TimeOfLecture" class="form-control" type="number" min="1" placeholder="Time of Lecture (minutes)" />
+                <label asp-for="TimeOfLecture"></label>
+                <span asp-validation-for="TimeOfLecture" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Add Subject</button>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
